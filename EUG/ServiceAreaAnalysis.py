@@ -3,7 +3,7 @@ from arcpy import env
 
 env.overwriteOutput = True
 env.workspace = r"T:\DCProjects\Support\EUG\MiddleHousing\MiddleHousing.gdb"
-input_folder = r"T:\DCProjects\StoryMap\BikeCounting\BikeMap\data\mapdata"
+input_folder = r"T:\DCProjects\Support\EUG\MiddleHousing"
 inNetworkDataset = r"T:\MPO\RTP\FY20 2045 Update\Data and Resources\Network_Analysis\Network_Analysis.gdb\Network_Ped_Bike\Network_ND"
 
 if arcpy.CheckExtension("network") == "Available":
