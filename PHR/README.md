@@ -1,0 +1,5 @@
+# Bike Parking Gaps
+
+The task is to create a map to inform the City where the "gaps" in parking are in the PeaceHealth Rides (PHR) system area. The map includes spatial data of trips that ended > 0.02 miles from a hub, holds which started > 0.02 miles from a hub, bike racks, and the PHR system area boundary.
+
+The first step is data preparation. The PHR trips and holds datasets are downloaded from the [Social Bicycles](https://socialbicycles.com/) website. The PHR system area boundary is provided by Cascadia Mobility. Bike rack data is provided by UO School of Planning, Public Policy and Management. Bike share trip ends and holds raw data is converted to spatial data. Heatmaps are created in ArcGIS Pro and ArcGIS Online ([link to map](https://gcc02.safelinks.protection.outlook.com/?url=https%3A%2F%2Farcg.is%2F0ue5nq&data=05%7C01%7CDCHEN%40lcog.org%7Cf293a6c5b76b4036196908da4e2245e4%7C9a80ddb717904782a634ef32f273169c%7C0%7C0%7C637908206395190417%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C3000%7C%7C%7C&sdata=XZvb%2FTho6ujazYRwKnjHSiyXk0h%2B6Pjo9wen8LEPomI%3D&reserved=0)) using the Heatmap Symbology.
