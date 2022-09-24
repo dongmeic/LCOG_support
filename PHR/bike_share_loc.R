@@ -14,6 +14,9 @@ selected_vars <- c('User.ID', 'Route.ID', 'Start.Hub',
                    'Distance..Miles.', 'Duration')
 
 df <- cbdf(path, vars="selected", selected_vars=selected_vars)
+excludedIDs <- c(717565, 742339, 764038, 819845, 1228447, 1354709, 1897910, 2184703, 2207685)
+df <- df[!(df$User.ID %in% excludedIDs),]
+
 # startlon <- -123.05014
 # endlon <- -122.87815
 # startlat <- 44.00676
@@ -30,6 +33,7 @@ df <- cbdf(path, vars="selected", selected_vars=selected_vars)
 sdf <- df
 #start_hb <- unique(sdf[,c("Start.Hub","Start.Latitude","Start.Longitude")])
 end_hb <- sdf[,c("End.Hub","End.Latitude","End.Longitude")]
+
 
 #colnames(start_hb) <- c("Name", "Latitude", "Longitude")
 colnames(end_hb) <- c("Name", "Latitude", "Longitude")
@@ -75,7 +79,7 @@ ugb <- spTransform(ugb, CRS(proj4string(MPOBound)))
 #writeOGR(locspdf, dsn=outpath, layer="bike_share_loc_spr", driver="ESRI Shapefile", overwrite_layer=TRUE)
 writeOGR(locspdf, dsn=outpath, layer="bike_share_loc_end", driver="ESRI Shapefile", overwrite_layer=TRUE)
 
-# end_hb has been edited here
+# end_hb has been edited here, see lines 53 - 56
 sum_end_df <- aggregate(x=list(count=end_hb$Name), 
                         by=list(name=end_hb$Name,
                                 lon=end_hb$Longitude, 
@@ -84,6 +88,7 @@ sum_end_df <- aggregate(x=list(count=end_hb$Name),
 locspdf <- df2spdf(sum_end_df, 'lon', 'lat')
 writeOGR(locspdf, dsn=outpath, layer="bike_share_loc_end_detail", driver="ESRI Shapefile", overwrite_layer=TRUE)
 
+# ArcGIS Pro - ReviewBikeCounts
 # after "select by location"
 trip_end_002 <- readOGR(dsn = "T:/DCProjects/Support/PHR/Trip_End_Locs_002", layer = "Trip_End_Locs_002")
 grep("Hilyard", stations$name, value = TRUE)
