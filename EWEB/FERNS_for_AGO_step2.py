@@ -25,3 +25,4 @@ if __name__ == '__main__':
     # Global Environment settings
     with arcpy.EnvManager(scratchWorkspace=wrkspace, workspace=wrkspace):
         FERNSforAGOstep2(*argv[1:])
+# print("tested")

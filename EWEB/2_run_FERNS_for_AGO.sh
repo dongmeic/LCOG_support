@@ -1,3 +1,0 @@
-python FERNS_for_AGO_step1.py
-python FERNS_for_AGO_step2.py
-python FERNS_for_AGO_step3.py
