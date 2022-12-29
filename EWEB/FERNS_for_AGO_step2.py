@@ -23,6 +23,6 @@ def FERNSforAGOstep2(Expression="YEAR = {0}".format(year)):  # FERNS for AGO ste
 
 if __name__ == '__main__':
     # Global Environment settings
-    with arcpy.EnvManager(scratchWorkspace=wrkspace, workspace=wrkspace):
-        FERNSforAGOstep2(*argv[1:])
-# print("tested")
+    # with arcpy.EnvManager(scratchWorkspace=wrkspace, workspace=wrkspace):
+    #     FERNSforAGOstep2(*argv[1:])
+    print("tested")

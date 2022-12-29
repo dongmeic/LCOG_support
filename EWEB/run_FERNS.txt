@@ -1,4 +1,5 @@
 #!/bin/bash
+# Run this script on Anaconda terminal
 #export PATH="C:/ProgramData/Anaconda3/condabin:$PATH"
 #eval "$(conda shell.bash hook)"
 #C:/ProgramData/Anaconda3/condabin/conda.bat deactivate C:/ProgramData/Anaconda3/envs/geoenv
