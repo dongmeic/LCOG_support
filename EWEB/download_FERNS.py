@@ -22,7 +22,7 @@ def main():
 
     # data = gpd.read_file(datapath, layer = 'Ferns_Noaps_Polygons')
 
-    print(data.head(3))
+    #print(data.head(3))
 
 if __name__ == "__main__":
     main()
