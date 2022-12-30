@@ -10,19 +10,23 @@ from data_util import get_data
 
 def main():
 
-    print("tested")
+    #print("tested")
 
-    # inpath = r'G:\projects\UtilityDistricts\eweb\DrinkingWater\EPA319_NPS_grant\ForestApplication\ODF_FACTS_DB\FERNS\FERNS_Model'
-    # subfolderlist = [x[0] for x in os.walk(inpath)]
+    inpath = r'G:\projects\UtilityDistricts\eweb\DrinkingWater\EPA319_NPS_grant\ForestApplication\ODF_FACTS_DB\FERNS\FERNS_Model'
+    subfolderlist = [x[0] for x in os.walk(inpath)]
 
-    # get_data(url = 'https://gisapps.odf.oregon.gov/data/FernsNoapsPolygons.Zip',
-    #         dest_folder = inpath + '\\FernsNoapsPolygon_downloads')
+    get_data(url = 'https://gisapps.odf.oregon.gov/data/FernsNoapsPolygons.Zip',
+            dest_folder = inpath + '\\FernsNoapsPolygon_downloads')
 
-    # datapath = max([i for i in subfolderlist if "Ferns_Noaps_Polygons" in i], key=os.path.getmtime)
+    datapath = max([i for i in subfolderlist if "Ferns_Noaps_Polygons" in i], key=os.path.getmtime)
 
-    # data = gpd.read_file(datapath, layer = 'Ferns_Noaps_Polygons')
+    data = gpd.read_file(datapath, layer = 'Ferns_Noaps_Polygons')
 
-    #print(data.head(3))
+    print("Downloaded completed and here are the last three rows:\n")
+
+    print(data.tail(3))
+
+    print("\n")
 
 if __name__ == "__main__":
     main()

@@ -12,7 +12,7 @@ def get_data(url, dest_folder):
         r = requests.get(url, stream=True)
         if r.ok:
             urllib.request.urlretrieve(url, file_path)
-            print("Saving to", os.path.abspath(file_path))
+            print("Saved to", os.path.abspath(file_path))
     #         with open(file_path, 'wb') as f:
     #             for chunk in r.iter_content(chunk_size=1024 * 8):
     #                 if chunk:
@@ -26,7 +26,7 @@ def get_data(url, dest_folder):
             zip_ref.extractall(dest_folder)
 
         extracted_file = dest_folder + '\\Ferns_Noaps_Polygons.gdb' 
-        print("Extracting file to", extracted_file)
+        print("Extracted file to", extracted_file)
 
         os.renames(extracted_file, renamed_file)
-        print("Renaming file to", renamed_file)
+        print("Renamed file to", renamed_file)

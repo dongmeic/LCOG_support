@@ -24,5 +24,6 @@ def FERNSforAGOstep3():  # FERNS for AGO step 3
 
 if __name__ == '__main__':
     # Global Environment settings
-    with arcpy.EnvManager(scratchWorkspace=wrkspace, workspace=wrkspace):
-        FERNSforAGOstep3()
+    # with arcpy.EnvManager(scratchWorkspace=wrkspace, workspace=wrkspace):
+    #     FERNSforAGOstep3()
+    print("tested")
