@@ -2,6 +2,7 @@
 
 import geopandas as gpd
 from data_util import *
+import timeit
 
 def main():
 
@@ -24,7 +25,12 @@ def main():
     print("\n")
 
 if __name__ == "__main__":
+    start = timeit.default_timer()
     main()
+    # print("tested")
+    stop = timeit.default_timer()
+    total_time = stop - start
+    print(f'Download FERNS takes {total_time}')
 
 
 

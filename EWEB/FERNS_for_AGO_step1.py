@@ -6,6 +6,7 @@ import arcpy
 import os
 from datetime import date
 from sys import argv
+import timeit
 
 path = r"G:\projects\UtilityDistricts\eweb\DrinkingWater\EPA319_NPS_grant\ForestApplication\ODF_FACTS_DB\FERNS\FERNS_Model"
 wrkspace = path + "\\FERNS_Workspace.gdb"
@@ -176,5 +177,9 @@ def Model11(Input_Data=path + "\\FernsNoapsPolygon_downloads\\Ferns_Noaps_Polygo
                                                         enforce_domains="NO_ENFORCE_DOMAINS")[0]
 
 if __name__ == '__main__':
+    start = timeit.default_timer()
     Model11(*argv[1:])
     # print("tested")
+    stop = timeit.default_timer()
+    total_time = stop - start
+    print(f'FERNS for AGO step 1 takes {total_time}')
