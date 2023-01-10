@@ -1,4 +1,10 @@
 
+import os
+import requests
+import zipfile
+import urllib.request
+from datetime import date
+
 def get_data(url, dest_folder):
     if not os.path.exists(dest_folder):
         os.makedirs(dest_folder)

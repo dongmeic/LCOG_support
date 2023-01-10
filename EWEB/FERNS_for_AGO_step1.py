@@ -74,7 +74,7 @@ def Model11(Input_Data=path + "\\FernsNoapsPolygon_downloads\\Ferns_Noaps_Polygo
                                     max_deviation="", 
                                     vertical="NO_VERTICAL")
 
-        # Process: Select desired activity types for the year 2022 (Select Layer By Attribute) (management)
+        # Process: Select desired activity types for the year (Select Layer By Attribute) (management)
         with arcpy.EnvManager(scratchWorkspace=wrkspace, workspace=wrkspace):
             Ferns_activities_selection, Count_2_ = arcpy.management.SelectLayerByAttribute(in_layer_or_view=ReProjected_to_StatePlane, 
                                                                                             selection_type="NEW_SELECTION", 
@@ -176,5 +176,5 @@ def Model11(Input_Data=path + "\\FernsNoapsPolygon_downloads\\Ferns_Noaps_Polygo
                                                         enforce_domains="NO_ENFORCE_DOMAINS")[0]
 
 if __name__ == '__main__':
-    # Model11(*argv[1:])
-    print("tested")
+    Model11(*argv[1:])
+    # print("tested")

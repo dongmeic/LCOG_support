@@ -10,20 +10,21 @@ path = r"G:\projects\UtilityDistricts\eweb\DrinkingWater\EPA319_NPS_grant\Forest
 wrkspace = path + "\\FERNS_Workspace.gdb"
 year = str(date.today().year)
 
-def FERNSforAGOstep2(Expression="YEAR = {0}".format(year)):  # FERNS for AGO step 2
+def FERNSforAGOstep2(Expression=f"YEAR = '{year}'"):  # FERNS for AGO step 2
 
     arcpy.env.overwriteOutput = True
 
-    AGO_FERNSSummary_McKenzie_Joined_4_ = "AGO FERNSSummary_McKenzie_Joined"
+    AGO_FERNSSummary_McKenzie_Joined_4_ = "https://services5.arcgis.com/9s1YtFmLS0YTl10F/arcgis/rest/services/FERNS_for_McKenzie_Catchments/FeatureServer/0"
 
     # Process: Select Layer By Attribute (Select Layer By Attribute) (management)
-    AGO_FERNSSummary_McKenzie_Joined_2_, Count = arcpy.management.SelectLayerByAttribute(in_layer_or_view=AGO_FERNSSummary_McKenzie_Joined_4_, 
+    AGO_FERNSSummary_McKenzie_Joined_2_, count = arcpy.management.SelectLayerByAttribute(in_layer_or_view=AGO_FERNSSummary_McKenzie_Joined_4_, 
                                                                                         selection_type="NEW_SELECTION", 
                                                                                         where_clause=Expression, 
                                                                                         invert_where_clause="")
+    print(f"Year {year} has {count} count!")
 
 if __name__ == '__main__':
     # Global Environment settings
-    # with arcpy.EnvManager(scratchWorkspace=wrkspace, workspace=wrkspace):
-    #     FERNSforAGOstep2(*argv[1:])
-    print("tested")
+    with arcpy.EnvManager(scratchWorkspace=wrkspace, workspace=wrkspace):
+        FERNSforAGOstep2(*argv[1:])
+    # print("tested")

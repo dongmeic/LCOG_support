@@ -1,12 +1,7 @@
 #!/usr/bin/env python
 
 import geopandas as gpd
-import os
-import requests
-import zipfile
-import urllib.request
-from datetime import date
-from data_util import get_data
+from data_util import *
 
 def main():
 
