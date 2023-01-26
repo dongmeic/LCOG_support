@@ -1,6 +1,7 @@
 import arcpy, os
-from datetime import datetime
+from datetime import datetime, date
 from homeless import *
+import time
 
 arcpy.env.overwriteOutput = True
 
@@ -17,7 +18,9 @@ for row in cursor:
 listdates = [dt[0] for dt in listdates1 if dt[0] is not None]    
 maxdate = max(listdates)
 
+
 # check whether there is a need to report
+maxdatestr = str(maxdate)
 datestr = maxdatestr.split('.')[0].split(' ')[0]
 res = convert_date(datestr)
 Y = res[1]
@@ -25,48 +28,68 @@ m = res[2]
 d = res[3]
 outfolder = os.path.join(outpath, Y, m+'_'+d)
 outfolder_yr = os.path.join(outpath, Y)
+filename = 'IllegalCampNotice_'+m+'_'+d+'_'+Y[2:4]+'.xlsx'
+file = os.path.join(outfolder, filename)
 
-if os.path.exists(outfolder):
+codeblock = """
+def getDateStr(date):
+    def convert_date(datestr):
+        datestrlist = datestr.split('-')
+        Y = datestrlist[0]
+        m = str(int(datestrlist[1]))
+        d = str(int(datestrlist[2]))
+        res = m+'/'+d+'/'+Y
+        return res
+
+    if date is None:
+        res = None
+    else:
+        strdate = str(date)
+        datestr = strdate.split(' ')[0]
+        res = convert_date(datestr)
+    return res"""
+
+if os.path.exists(outfolder) & os.path.exists(file):
     print('No need to report!')
 else:
     print('Making the report...')
     if not os.path.exists(outfolder_yr):
         os.makedirs(outfolder_yr)
-    else:
+        print('Created the new Year folder...')
+    elif not os.path.exists(outfolder):
         os.makedirs(outfolder)
-    print('Created the new folder...')
+        print('Created the new folder...')
+    else:
+        print('Folder already exists but missing the file...')
     
-    # copy the feature layer to edit the fields
-    arcpy.management.CopyFeatures(camp_site, path + '\\MyProject4.gdb\\datacopy')
-    print('Copied the data...')
+    featureclass = path + '\\MyProject4.gdb\\datacopy'
+    ti_m = os.path.getmtime(path + '\\MyProject4.gdb')
+    m_ti = time.ctime(ti_m)
+    t_obj = time.strptime(m_ti)
+    T_stamp = time.strftime("%Y-%m-%d %H:%M:%S", t_obj)
+    todaystr = str(date.today())
+    
+    if (arcpy.Exists(featureclass)) & (T_stamp.split(' ')[0] == todaystr):
+        print('Got the data copy...')
+    else:
+        # copy the feature layer to edit the fields
+        print('Making a copy of the data and this will take a while...')
+        arcpy.management.CopyFeatures(camp_site, featureclass)
+        print('Copied the data...')
     # add feature to convert dates
-    arcpy.management.AddFields(path + '\\MyProject4.gdb\\datacopy', [['Date_str', "TEXT", 'datestr', 255, getDateStr(maxdate), '']])
+    field_names = [f.name for f in arcpy.ListFields(featureclass)]
+    newfield = 'Date_str'
+    if newfield not in field_names:
+        arcpy.management.AddFields(featureclass, [[newfield, "TEXT", 'datestr', 255, '1/18/2023 10:52:35 PM', '']])
+        print('Added a date string field...')
 
     expression = "getDateStr(!Date!)"
 
-    codeblock = """
-    def getDateStr(date):
-        def convert_date(datestr):
-            datestrlist = datestr.split('-')
-            Y = datestrlist[0]
-            m = str(int(datestrlist[1]))
-            d = str(int(datestrlist[2]))
-            res = m+'/'+d+'/'+Y
-            return res
-
-        if date is None:
-            res = None
-        else:
-            strdate = str(date)
-            datestr = strdate.split(' ')[0]
-            res = convert_date(datestr)
-        return res"""
-
     # convert the date field for feature selection
-    arcpy.management.CalculateField(path + '\\MyProject4.gdb\\datacopy', 'Date_str',  expression, "PYTHON3", codeblock)
+    arcpy.management.CalculateField(featureclass, newfield, expression, "PYTHON3", codeblock)
     print('Formatted the date...')
     # select the most recent date
-    selres = arcpy.SelectLayerByAttribute_management(path + '\\MyProject4.gdb\\datacopy',
+    selres = arcpy.SelectLayerByAttribute_management(featureclass,
                                                      "NEW_SELECTION", f"Date_str = '{getDateStr(maxdate)}'")
     arcpy.management.CopyFeatures(selres, path + '\\MyProject4.gdb\\most_recent')
     print('Selected the most recent data...')
@@ -92,4 +115,6 @@ else:
     print('Completed a spatial join with taxlot...')
     
     arcpy.conversion.TableToExcel(path + '\\MyProject4.gdb\\HomelessCampSite_SpatialJoin14c', path+'\\most_recent.xlsx')
+    
+    print('Exported the join table...')
     
