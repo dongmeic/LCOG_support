@@ -29,3 +29,10 @@ def getDateStr(date):
         res = convert_date(datestr)
     return res
 
+# clean all formats
+def removeFormatting(ws):
+    # ws is not the worksheet name, but the worksheet object
+    for row in ws.iter_rows():
+        for cell in row:
+            cell.style = 'Normal'
+    return ws
