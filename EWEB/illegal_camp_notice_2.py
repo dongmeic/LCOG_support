@@ -6,6 +6,7 @@ from bs4 import BeautifulSoup
 from homeless import *
 import openpyxl
 from win32com.client import Dispatch
+import numpy as np
 
 outpath = r'G:\projects\UtilityDistricts\eweb\DrinkingWater\IllegalCampCoordination\Recieved'
 path = outpath + '\\IllegalCampNotification_pro'
@@ -13,6 +14,19 @@ path = outpath + '\\IllegalCampNotification_pro'
 dat = pd.read_excel(path+'\\most_recent.xlsx')
 cols2drop = ['OBJECTID', 'Join_Count', 'Unruly_inhabitants']
 dat = dat.drop(cols2drop, axis=1)
+dat.columns = list(map(lambda x: x.capitalize(), dat.columns))
+dat.rename(columns={'Ownname': 'Own_name', 'Addr1': 'Owner_address'}, inplace=True)
+dat.columns = ['Target_fid', 'Status', 'Comments', 'Date', 'Submitted_by',
+       'Dogs_present', 'Hazardous_materials_present', 'Biohazards_present',
+       'Size_of_encampment', 'Maptaxlot_hyphen', 'Owner_name', 'Owner_address', 
+               'Nearby_owner', 'Nearby_owner_address', 
+       'Ownercity', 'Ownerprvst', 'Ownerzip', 'Geocity_name', 'Ugb_name',
+       'Longitude', 'Latitude']
+taxlotcodes = pd.read_csv('mythical_taxlot_codes.csv')
+for idx in range(0, dat.shape[0]):
+    if np.isnan(dat.loc[idx, 'Owner_name']) & (int(dat.loc[idx,'Maptaxlot_hyphen'][-2:]) in taxlotcodes.end_number.values):
+        dat.loc[
+    
 
 intakepath = r'G:\projects\UtilityDistricts\eweb\DrinkingWater\RiparianEcosystemMarketplace\market_area\REM_area.gdb'
 intake_areas = gpd.read_file(intakepath, driver='FileGDB', layer='AboveIntake')

@@ -89,7 +89,7 @@ else:
     print('Completed a spatial join with taxlot...')
     
     field_names = [f.name for f in arcpy.ListFields(spatialJoin)]
-    newfields = ["Nearby owner", "Nearby owner address"]
+    newfields = ["Nearby_owner", "Nearby_owner_address"]
     missing_own = [row[0] is None for row in arcpy.da.SearchCursor(spatialJoin, "ownname") if row[0] is None]
     res = arcpy.GetCount_management(spatialJoin)
     if any(missing_own):
@@ -98,20 +98,18 @@ else:
             if newfield not in field_names:
                 arcpy.management.AddField(spatialJoin, newfield, "TEXT", 255)
     
-        with arcpy.da.UpdateCursor(spatialJoin, ["ownname", newfields]) as cursor:
+        with arcpy.da.UpdateCursor(spatialJoin, ["ownname", 'Nearby_owner', 'Nearby_owner_address']) as cursor:
             if row[0] is None:
                 selres2 = arcpy.management.SelectLayerByAttribute(spatialJoin, "NEW_SELECTION", "ownname IS NULL", None)
                 taxlots_w_ownernm = arcpy.management.SelectLayerByAttribute(fc, "NEW_SELECTION", "ownname IS NOT NULL", None)
                 spatialJoin2 = path + '\\MyProject4.gdb\\CampSite_SpatialJoin'
                 arcpy.analysis.SpatialJoin(selres2, taxlots_w_ownernm, spatialJoin2, "JOIN_ONE_TO_ONE", "KEEP_ALL", 'Join_Count "Join_Count" true true false 4 Long 0 0,First,#,Camp Site,Join_Count,-1,-1;TARGET_FID "TARGET_FID" true true false 4 Long 0 0,First,#,Camp Site,TARGET_FID,-1,-1;Status "Status" true true false 50 Text 0 0,First,#,Camp Site,Status,0,50;Comments "Comments" true true false 500 Text 0 0,First,#,Camp Site,Comments,0,500;Date "Date" true true false 8 Date 0 0,First,#,Camp Site,Date,-1,-1;Submitted_by "Submitted By" true true false 50 Text 0 0,First,#,Camp Site,Submitted_by,0,50;Dogs_present "Dogs present" true true false 50 Text 0 0,First,#,Camp Site,Dogs_present,0,50;Unruly_inhabitants "Unruly inhabitants" true true false 50 Text 0 0,First,#,Camp Site,Unruly_inhabitants,0,50;Hazardous_materials_present "Hazardous materials present" true true false 50 Text 0 0,First,#,Camp Site,Hazardous_materials_present,0,50;Biohazards_present "Biohazards present" true true false 50 Text 0 0,First,#,Camp Site,Biohazards_present,0,50;Size_of_encampment "Size of encampment" true true false 50 Text 0 0,First,#,Camp Site,Size_of_encampment,0,50;maptaxlot_hyphen "maptaxlot_hyphen" true true false 17 Text 0 0,First,#,Camp Site,maptaxlot_hyphen,0,17;ownname "ownname" true true false 128 Text 0 0,First,#,Camp Site,ownname,0,128;addr1 "addr1" true true false 64 Text 0 0,First,#,Camp Site,addr1,0,64;ownercity "ownercity" true true false 40 Text 0 0,First,#,Camp Site,ownercity,0,40;ownerprvst "ownerprvst" true true false 30 Text 0 0,First,#,Camp Site,ownerprvst,0,30;ownerzip "ownerzip" true true false 10 Text 0 0,First,#,Camp Site,ownerzip,0,10;geocity_name "geocity_name" true true false 32 Text 0 0,First,#,Camp Site,geocity_name,0,32;ugb_name "ugb_name" true true false 32 Text 0 0,First,#,Camp Site,ugb_name,0,32;longitude "longitude" true true false 8 Double 0 0,First,#,Camp Site,longitude,-1,-1;latitude "latitude" true true false 8 Double 0 0,First,#,Camp Site,latitude,-1,-1;maptaxlot_hyphen_1 "maptaxlot_hyphen" true true false 17 Text 0 0,First,#,Taxlots,maptaxlot_hyphen,0,17;ownname_1 "ownname" true true false 128 Text 0 0,First,#,Taxlots,ownname,0,128;addr1_1 "addr1" true true false 64 Text 0 0,First,#,Taxlots,addr1,0,64;ownercity_1 "ownercity" true true false 40 Text 0 0,First,#,Taxlots,ownercity,0,40;ownerprvst_1 "ownerprvst" true true false 30 Text 0 0,First,#,Taxlots,ownerprvst,0,30;ownerzip_1 "ownerzip" true true false 10 Text 0 0,First,#,Taxlots,ownerzip,0,10;geocity_name_1 "geocity_name" true true false 32 Text 0 0,First,#,Taxlots,geocity_name,0,32;ugb_name_1 "ugb_name" true true false 32 Text 0 0,First,#,Taxlots,ugb_name,0,32;longitude_1 "longitude" true true false 8 Double 8 38,First,#,Taxlots,longitude,-1,-1;latitude_1 "latitude" true true false 8 Double 8 38,First,#,Taxlots,latitude,-1,-1', "CLOSEST", None, '')
-                values = [row for row in arcpy.da.SearchCursor(spatialJoin, ["ownname", "addr1"])]
-                
-            
-    
-    
-    
-    
-    
+                values = [rowv for rowv in arcpy.da.SearchCursor(spatialJoin2, ["ownname", "addr1"])]
+                row[1] = values[0]
+                row[2] = values[1]
+                cursor.updateRow(row)
+            print("Updated nearby owner name and address...")
+             
     arcpy.conversion.TableToExcel(spatialJoin, path+'\\most_recent.xlsx')
     
     print('Exported the join table...')

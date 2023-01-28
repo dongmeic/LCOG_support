@@ -1,3 +1,7 @@
+datapath = max([i for i in subfolderlist if "Ferns_Noaps_Polygons" in i], key=os.path.getmtime)
+download_date = datapath.split("Ferns_Noaps_Polygons_")[1][0:8]
+
+
 codeblock = """
 def getDateStr(date):
     def convert_date(datestr):
