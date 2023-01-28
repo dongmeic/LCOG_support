@@ -15,18 +15,21 @@ dat = pd.read_excel(path+'\\most_recent.xlsx')
 cols2drop = ['OBJECTID', 'Join_Count', 'Unruly_inhabitants']
 dat = dat.drop(cols2drop, axis=1)
 dat.columns = list(map(lambda x: x.capitalize(), dat.columns))
-dat.rename(columns={'Ownname': 'Own_name', 'Addr1': 'Owner_address'}, inplace=True)
-dat.columns = ['Target_fid', 'Status', 'Comments', 'Date', 'Submitted_by',
-       'Dogs_present', 'Hazardous_materials_present', 'Biohazards_present',
-       'Size_of_encampment', 'Maptaxlot_hyphen', 'Owner_name', 'Owner_address', 
-               'Nearby_owner', 'Nearby_owner_address', 
-       'Ownercity', 'Ownerprvst', 'Ownerzip', 'Geocity_name', 'Ugb_name',
-       'Longitude', 'Latitude']
-taxlotcodes = pd.read_csv('mythical_taxlot_codes.csv')
-for idx in range(0, dat.shape[0]):
-    if np.isnan(dat.loc[idx, 'Owner_name']) & (int(dat.loc[idx,'Maptaxlot_hyphen'][-2:]) in taxlotcodes.end_number.values):
-        dat.loc[
-    
+dat.rename(columns={'Ownname': 'Owner_name', 'Addr1': 'Owner_address'}, inplace=True)
+if 'Nearby_owner' in dat.columns:
+    k = 2
+    dat = dat[['Target_fid', 'Status', 'Comments', 'Date', 'Submitted_by','Dogs_present', 'Hazardous_materials_present', 
+    'Biohazards_present','Size_of_encampment', 'Maptaxlot_hyphen', 'Owner_name', 'Owner_address', 'Nearby_owner', 
+    'Nearby_owner_address', 'Ownercity', 'Ownerprvst', 'Ownerzip', 'Geocity_name', 'Ugb_name','Longitude', 'Latitude']]
+    taxlotcodes = pd.read_csv('mythical_taxlot_codes.csv')
+    for idx in range(0, dat.shape[0]):
+        taxlotcode = int(dat.loc[idx,'Maptaxlot_hyphen'][-2:])
+        if np.isnan(dat.loc[idx, 'Owner_name']) & (taxlotcode in taxlotcodes.end_number.values):
+            dat.loc[idx, 'Owner_name'] = 'Mythical lot number for ' + taxlotcodes.loc[taxlotcodes.end_number == taxlotcode, 'taxlot'].values[0]
+else:
+    k = 0
+
+dat.rename(columns={'Target_fid': 'Target_FID'}, inplace=True)
 
 intakepath = r'G:\projects\UtilityDistricts\eweb\DrinkingWater\RiparianEcosystemMarketplace\market_area\REM_area.gdb'
 intake_areas = gpd.read_file(intakepath, driver='FileGDB', layer='AboveIntake')
@@ -50,10 +53,10 @@ print("Got file name...")
 for pID in points.index:
     point = points[points.index==pID]
     if all(intake_areas.contains(point)):
-        dat.loc[pID, 'Above Intake'] = 'Yes'
+        dat.loc[pID, 'Above_Intake'] = 'Yes'
     else:
-        dat.loc[pID, 'Above Intake'] = 'No'
-    FID = dat.loc[pID, 'TARGET_FID']
+        dat.loc[pID, 'Above_Intake'] = 'No'
+    FID = dat.loc[pID, 'Target_FID']
     url= urlstart+str(FID)+urlend
     resp=requests.get(url)
     links = []
@@ -84,24 +87,24 @@ ws = removeFormatting(ws)
 for pID in points.index:
     photovalue = dat.loc[pID, 'Photos']
     if photovalue == 'NA':
-        print(f"No photos at Point {dat.loc[pID, 'TARGET_FID']}")
+        print(f"No photos at Point {dat.loc[pID, 'Target_FID']}")
     else:
-        ws.cell(row=2, column=21).value = 'Yes'
+        ws.cell(row=2+pID, column=21+k).value = 'Yes'
         if ';' in photovalue: 
             urls = photovalue.split('; ')
             for i in range(0, len(urls)):
-                ws.cell(row=2, column=22+i).value = '=HYPERLINK("{}", "{}")'.format(urls[i],'Photo '+str(i+1))
-                ws.cell(row=2, column=22+i).style = "Hyperlink"
+                ws.cell(row=2+pID, column=22+i+k).value = '=HYPERLINK("{}", "{}")'.format(urls[i],'Photo '+str(i+1))
+                ws.cell(row=2+pID, column=22+i+k).style = "Hyperlink"
         else:
-            ws.cell(row=2, column=22).value = '=HYPERLINK("{}", "{}")'.format(photovalue,'Photo')
-            ws.cell(row=2, column=22).style = "Hyperlink"
+            ws.cell(row=2+pID, column=22+k).value = '=HYPERLINK("{}", "{}")'.format(photovalue,'Photo')
+            ws.cell(row=2+pID, column=22+k).style = "Hyperlink"
 wb.save(file)
 print("Checked photos...")
 excel = Dispatch('Excel.Application')
 wb = excel.Workbooks.Open(file)
 excel.Worksheets(1).Activate()
 excel.ActiveSheet.Columns.AutoFit()
-wb.Save()
+wb.Close(True)
 print("Autofitted columns...")
 
 
