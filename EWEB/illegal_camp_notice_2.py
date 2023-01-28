@@ -13,11 +13,10 @@ path = outpath + '\\IllegalCampNotification_pro'
 dat = pd.read_excel(path+'\\most_recent.xlsx')
 cols2drop = ['OBJECTID', 'Join_Count', 'Unruly_inhabitants']
 dat = dat.drop(cols2drop, axis=1)
-dat.loc[:, 'TARGET_FID'] = dat.loc[:, 'TARGET_FID'] + 1085
 
 intakepath = r'G:\projects\UtilityDistricts\eweb\DrinkingWater\RiparianEcosystemMarketplace\market_area\REM_area.gdb'
 intake_areas = gpd.read_file(intakepath, driver='FileGDB', layer='AboveIntake')
-points = gpd.read_file(path + '\\MyProject.gdb', driver='FileGDB', layer='HomelessCampSite_SpatialJoin')
+points = gpd.read_file(path + '\\MyProject4.gdb', driver='FileGDB', layer='HomelessCampSite_SpatialJoin')
 points = points.to_crs(epsg=2914)
 print("Read data...")
 
