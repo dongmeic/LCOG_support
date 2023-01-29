@@ -106,5 +106,3 @@ excel.Worksheets(1).Activate()
 excel.ActiveSheet.Columns.AutoFit()
 wb.Close(True)
 print("Autofitted columns...")
-
-
