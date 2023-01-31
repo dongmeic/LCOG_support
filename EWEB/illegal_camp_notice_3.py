@@ -13,7 +13,9 @@ m = aprx.listMaps("Map")[0]
 
 lyr = m.listLayers("Campsite")[0]
 
-mf.camera.setExtent(mf.getLayerExtent(lyr, False, True))
+ex = mf.getLayerExtent(lyr, False, True)
+p = 500
+mf.camera.setExtent(arcpy.Extent(ex.XMin - p, ex.YMin - p, ex.XMax + p, ex.YMax + p))
 
 lyt.exportToJPEG(path + "\\Map.jpg")
 

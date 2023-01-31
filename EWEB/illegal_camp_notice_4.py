@@ -6,8 +6,8 @@ from datetime import date
 
 outpath = r'\\clsrv111.int.lcog.org\GIS\projects\UtilityDistricts\eweb\DrinkingWater\IllegalCampCoordination\Recieved'
 path = outpath + '\\IllegalCampNotification_pro'
-#res = convert_date(str(date.today()))
-res = convert_date(str(date(2023, 1, 26)))
+res = convert_date(str(date.today()))
+#res = convert_date(str(date(2023, 1, 26)))
 Y = res[1]
 m = res[2]
 d = res[3]

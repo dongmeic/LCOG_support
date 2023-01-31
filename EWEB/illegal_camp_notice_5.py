@@ -14,8 +14,8 @@ def main(args):
     #return
     outpath = r'\\clsrv111.int.lcog.org\GIS\projects\UtilityDistricts\eweb\DrinkingWater\IllegalCampCoordination\Recieved'
     path = outpath + '\\IllegalCampNotification_pro'
-    #res = convert_date(str(date.today()))
-    res = convert_date(str(date(2023, 1, 26)))
+    res = convert_date(str(date.today()))
+    #res = convert_date(str(date(2023, 1, 26)))
     Y = res[1]
     m = res[2]
     d = res[3]
@@ -36,11 +36,12 @@ def main(args):
         wb.save(outfile)
         print("Added the updated image...")
     
-    #mailprepare()
+    mailprepare()
     print("Sent out the emails...")
 
 def mailprepare():
-    data = pd.read_excel(outpath+'\\Illegal Camping Report Mailing List.xlsx')
+    #data = pd.read_excel(outpath+'\\Illegal Camping Report Mailing List.xlsx')
+    data = pd.read_excel('testemail.xlsx')
     num = range(0, data.shape[0])
     for kk in num:
         outlook = win32com.client.Dispatch("Outlook.Application")

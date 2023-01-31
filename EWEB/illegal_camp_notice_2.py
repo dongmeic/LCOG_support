@@ -25,7 +25,7 @@ if 'Nearby_owner' in dat.columns:
     for idx in range(0, dat.shape[0]):
         taxlotcode = int(dat.loc[idx,'Maptaxlot_hyphen'][-2:])
         if np.isnan(dat.loc[idx, 'Owner_name']) & (taxlotcode in taxlotcodes.end_number.values):
-            dat.loc[idx, 'Owner_name'] = 'Mythical lot number for ' + taxlotcodes.loc[taxlotcodes.end_number == taxlotcode, 'taxlot'].values[0]
+            dat.loc[idx, 'Owner_name'] = taxlotcodes.loc[taxlotcodes.end_number == taxlotcode, 'taxlot'].values[0].capitalize() + ' R/W'
 else:
     k = 0
 
@@ -86,7 +86,7 @@ ws = wb.active
 ws = removeFormatting(ws)
 for pID in points.index:
     photovalue = dat.loc[pID, 'Photos']
-    if photovalue == 'NA':
+    if str(photovalue) == 'nan':
         print(f"No photos at Point {dat.loc[pID, 'Target_FID']}")
     else:
         ws.cell(row=2+pID, column=21+k).value = 'Yes'
