@@ -7,7 +7,5 @@ echo "No further steps needed"
 ) else (
 activate geoenv & python illegal_camp_notice_2.py & conda deactivate
 C:\Users\clid1852\AppData\Local\ESRI\conda\envs\arcgispro-py3-clone\python.exe illegal_camp_notice_3.py
-activate geoenv & python illegal_camp_notice_4.py & conda deactivate
+activate geoenv & python illegal_camp_notice_4.py & conda deactivate & C: & cd "Users\clid1852"
 )
-C:
-cd "Users\clid1852"

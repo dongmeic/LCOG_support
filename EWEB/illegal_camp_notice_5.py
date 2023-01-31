@@ -1,5 +1,4 @@
-from win32com.client import Dispatch
-import win32com
+import win32com.client as win32
 import pandas as pd
 from homeless import *
 import os
@@ -35,16 +34,12 @@ def main(args):
 
         wb.save(outfile)
         print("Added the updated image...")
-    
-    mailprepare()
-    print("Sent out the emails...")
 
-def mailprepare():
     #data = pd.read_excel(outpath+'\\Illegal Camping Report Mailing List.xlsx')
     data = pd.read_excel('testemail.xlsx')
     num = range(0, data.shape[0])
     for kk in num:
-        outlook = win32com.client.Dispatch("Outlook.Application")
+        outlook = win32.Dispatch('outlook.application')
         mail = outlook.CreateItem(0)
         
         name = data['name'][kk]
@@ -65,6 +60,7 @@ def mailprepare():
         mail.Attachments.Add(outfile)
 
         mail.Send()
-
+    print("Sent out the emails...")
+    
 if __name__ == "__main__":
     main(sys.argv)
