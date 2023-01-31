@@ -37,29 +37,27 @@ def main(args):
 
     #data = pd.read_excel(outpath+'\\Illegal Camping Report Mailing List.xlsx')
     data = pd.read_excel('testemail.xlsx')
-    num = range(0, data.shape[0])
-    for kk in num:
-        outlook = win32.Dispatch('outlook.application')
-        mail = outlook.CreateItem(0)
-        
-        name = data['name'][kk]
-        mailto = data['address'][kk]
+    outlook = win32.Dispatch('outlook.application')
+    mail = outlook.CreateItem(0)
+    
+    #mailto = 'LCOGIllegalCampandDebrisCleanup@lcog.org'
+    mailto = 'dchen@lcog.org'
+    mail.To = mailto
+    mail.CC = ";".join(data['address'])
+    mail.Subject = f'Illegal Camping Report {str(date.today())}'
+    mail.Body =  """
+    Hello, 
 
-        mail.To = mailto
-        mail.Subject = f'Illegal Camping Report {str(date.today())}'
-        mail.Body =  """
-        Hello, 
+    Please see the attached for today's Illegal Camping Report. 
+    For questions about this report or the application please contact myself or Chrissy Barrows at LCOG.
 
-        Please see the attached for the latest Illegal Camping Report. 
-        For questions about this report or the application please contact myself or Chrissy Barrows at LCOG.
+    Thank you,
+    Dongmei 
 
-        Thank you,
-        Dongmei 
+    """
+    mail.Attachments.Add(outfile)
 
-        """
-        mail.Attachments.Add(outfile)
-
-        mail.Send()
+    mail.Send()
     print("Sent out the emails...")
     
 if __name__ == "__main__":
