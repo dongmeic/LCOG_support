@@ -35,13 +35,13 @@ def main(args):
         wb.save(outfile)
         print("Added the updated image...")
 
-    #data = pd.read_excel(outpath+'\\Illegal Camping Report Mailing List.xlsx')
-    data = pd.read_excel('testemail.xlsx')
+    data = pd.read_excel(outpath+'\\Illegal Camping Report Mailing List.xlsx')
+    #data = pd.read_excel('testemail.xlsx')
     outlook = win32.Dispatch('outlook.application')
     mail = outlook.CreateItem(0)
     
-    #mailto = 'LCOGIllegalCampandDebrisCleanup@lcog.org'
-    mailto = 'dchen@lcog.org'
+    mailto = 'LCOGIllegalCampandDebrisCleanup@lcog.org'
+    #mailto = 'dchen@lcog.org'
     mail.To = mailto
     mail.CC = ";".join(data['address'])
     mail.Subject = f'Illegal Camping Report {str(date.today())}'
