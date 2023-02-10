@@ -36,3 +36,15 @@ def removeFormatting(ws):
         for cell in row:
             cell.style = 'Normal'
     return ws
+
+def convert_dtypes_arcgis(df):
+   # Convert dataframe dtypes which are not compatible with ArcGIS
+   # Use builtin Pandas dtype conversion
+    df = df.convert_dtypes(infer_objects=True)
+   # Then str convert any remaining special object/category fields 
+    for col in df.columns:
+    # print(col, '/', df[col].dtype)
+        if df[col].dtype == 'object':
+            df[col] = df[col].astype('str')
+   # Return modified df
+    return df

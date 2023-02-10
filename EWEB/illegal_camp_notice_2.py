@@ -6,7 +6,6 @@ from bs4 import BeautifulSoup
 from homeless import *
 import openpyxl
 from win32com.client import Dispatch
-import numpy as np
 
 outpath = r'G:\projects\UtilityDistricts\eweb\DrinkingWater\IllegalCampCoordination\Recieved'
 path = outpath + '\\IllegalCampNotification_pro'
@@ -24,7 +23,7 @@ if 'Nearby_owner' in dat.columns:
     taxlotcodes = pd.read_csv('mythical_taxlot_codes.csv')
     for idx in range(0, dat.shape[0]):
         taxlotcode = int(dat.loc[idx,'Maptaxlot_hyphen'][-2:])
-        if np.isnan(dat.loc[idx, 'Owner_name']) & (taxlotcode in taxlotcodes.end_number.values):
+        if (str(dat.loc[idx, 'Owner_name']) == 'nan') & (taxlotcode in taxlotcodes.end_number.values):
             dat.loc[idx, 'Owner_name'] = taxlotcodes.loc[taxlotcodes.end_number == taxlotcode, 'taxlot'].values[0].capitalize() + ' R/W'
 else:
     k = 0

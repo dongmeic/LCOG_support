@@ -1,6 +1,39 @@
 datapath = max([i for i in subfolderlist if "Ferns_Noaps_Polygons" in i], key=os.path.getmtime)
 download_date = datapath.split("Ferns_Noaps_Polygons_")[1][0:8]
 
+for row in arcpy.da.SearchCursor(camp_site, ["Date", "OBJECTID"]):
+    while row[0] == maxdate:
+        selres = arcpy.SelectLayerByAttribute_management(camp_site,
+                                                            "ADD_TO_SELECTION", f"OBJECTID = {row[1]}")
+arcpy.management.CopyFeatures(selres, path + '\\MyProject4.gdb\\most_recent')
+
+cs_fc = path + '\\MyProject4.gdb\\most_recent'
+with arcpy.da.UpdateCursor(cs_fc, "OBJECTID") as cursor:
+    for row in cursor:
+        if row[0] > 0:
+            cursor.deleteRow()
+
+targetCursor = arcpy.da.InsertCursor(cs_fc,"*")
+targetCursor.insertRow(row)
+
+from arcgis import GIS
+from arcgis.features import FeatureLayerCollection
+import pandas as pd
+gis = GIS('home')
+
+camp_site = 'https://services5.arcgis.com/9s1YtFmLS0YTl10F/ArcGIS/rest/services/ZHomeless_Camp_Trash_Collector/FeatureServer/0'
+
+url = 'https://services5.arcgis.com/9s1YtFmLS0YTl10F/ArcGIS/rest/services/ZHomeless_Camp_Trash_Collector/FeatureServer'
+camp_site = url + '/0'
+
+flyrs = FeatureLayerCollection(url)
+fl = flyrs.layers[0]
+sdf = pd.DataFrame.spatial.from_layer(fl)
+sdf['datestr'] = sdf.Date.apply(lambda x: str(x).split(' ')[0])
+sdf_s = sdf[sdf.datestr == maxdatestr]
+df = convert_dtypes_arcgis(sdf_s)
+datacopy = df.spatial.to_featureclass(path + '\\MyProject4.gdb\\most_recent')
+print(f'Most recent data saved at {datacopy}')
 
 codeblock = """
 def getDateStr(date):
