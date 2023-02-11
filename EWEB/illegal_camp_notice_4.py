@@ -22,7 +22,7 @@ ws = wb.active
 img = openpyxl.drawing.image.Image(path+'\\Map.jpg')
 img.height = 255*3
 img.width = 330*3
-img.anchor = 'C5'
+img.anchor = 'C7'
 ws.add_image(img)
 
 wb.save(outfile)

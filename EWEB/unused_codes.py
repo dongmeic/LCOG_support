@@ -16,25 +16,6 @@ with arcpy.da.UpdateCursor(cs_fc, "OBJECTID") as cursor:
 targetCursor = arcpy.da.InsertCursor(cs_fc,"*")
 targetCursor.insertRow(row)
 
-from arcgis import GIS
-from arcgis.features import FeatureLayerCollection
-import pandas as pd
-gis = GIS('home')
-
-camp_site = 'https://services5.arcgis.com/9s1YtFmLS0YTl10F/ArcGIS/rest/services/ZHomeless_Camp_Trash_Collector/FeatureServer/0'
-
-url = 'https://services5.arcgis.com/9s1YtFmLS0YTl10F/ArcGIS/rest/services/ZHomeless_Camp_Trash_Collector/FeatureServer'
-camp_site = url + '/0'
-
-flyrs = FeatureLayerCollection(url)
-fl = flyrs.layers[0]
-sdf = pd.DataFrame.spatial.from_layer(fl)
-sdf['datestr'] = sdf.Date.apply(lambda x: str(x).split(' ')[0])
-sdf_s = sdf[sdf.datestr == maxdatestr]
-df = convert_dtypes_arcgis(sdf_s)
-datacopy = df.spatial.to_featureclass(path + '\\MyProject4.gdb\\most_recent')
-print(f'Most recent data saved at {datacopy}')
-
 codeblock = """
 def getDateStr(date):
     def convert_date(datestr):
