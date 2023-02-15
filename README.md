@@ -8,6 +8,11 @@ The task is to create a shapefile layer of taxlots that are within a walking dis
 
 The steps are 1) [creating EmX bus stops](https://github.com/dongmeic/LCOG_support/blob/main/EUG/Create_EmX_stops.ipynb); 2) [creating service areas from EmX bus stops](https://github.com/dongmeic/LCOG_support/blob/main/EUG/ServiceAreaAnalysis.py); 3) spatial overlay (e.g., intersect) between taxlots and service areas. The last step is done in ArcGIS Pro.
 
+# SPR
+## Heatmaps
+
+Maps are shown in the `maps` folder. 
+
 # EWEB
 ## [FERNS dashboard](https://lcog.maps.arcgis.com/apps/dashboards/f003689bcb7f45eca5be6f02baada6c0)
 
