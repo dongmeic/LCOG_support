@@ -8,11 +8,6 @@ The task is to create a shapefile layer of taxlots that are within a walking dis
 
 The steps are 1) [creating EmX bus stops](https://github.com/dongmeic/LCOG_support/blob/main/EUG/Create_EmX_stops.ipynb); 2) [creating service areas from EmX bus stops](https://github.com/dongmeic/LCOG_support/blob/main/EUG/ServiceAreaAnalysis.py); 3) spatial overlay (e.g., intersect) between taxlots and service areas. The last step is done in ArcGIS Pro.
 
-# SPR
-## Heatmaps
-
-Maps are shown in the `maps` folder. 
-
 # EWEB
 ## [FERNS dashboard](https://lcog.maps.arcgis.com/apps/dashboards/f003689bcb7f45eca5be6f02baada6c0)
 
@@ -33,3 +28,11 @@ The work is to report illegal camp site for watershed protection. The project tr
 [Step 4](https://github.com/dongmeic/LCOG_support/blob/main/EWEB/illegal_camp_notice_4.py): add the image to the table and send out an email notification for review;
 
 [Step 5](https://github.com/dongmeic/LCOG_support/blob/main/EWEB/illegal_camp_notice_5.py): after the review, decide whether there is a need to edit the map manually and remove the added image; run this script to add the updated map and send out the notice to the group.
+
+# PHR
+## [Bike parking gaps](https://github.com/dongmeic/LCOG_support/tree/main/PHR#bike-parking-gaps)
+
+# SPR
+## Heatmaps
+
+Maps for biking systems (e.g., bike share and bike rack location popularity) are shown in the [`maps`](https://github.com/dongmeic/LCOG_support/tree/main/SPR/maps) folder.
