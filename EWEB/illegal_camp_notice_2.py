@@ -30,9 +30,10 @@ else:
 
 dat.rename(columns={'Target_fid': 'Target_FID'}, inplace=True)
 
-intakepath = r'G:\projects\UtilityDistricts\eweb\DrinkingWater\RiparianEcosystemMarketplace\market_area\REM_area.gdb'
-intake_areas = gpd.read_file(intakepath, driver='FileGDB', layer='AboveIntake')
-points = gpd.read_file(path + '\\MyProject4.gdb', driver='FileGDB', layer='HomelessCampSite_SpatialJoin')
+#intakepath = r'G:\projects\UtilityDistricts\eweb\DrinkingWater\RiparianEcosystemMarketplace\market_area\REM_area.gdb'
+shppath = path + '\\MyProject4.gdb'
+intake_areas = gpd.read_file(shppath, driver='FileGDB', layer='AboveIntake_Dissolve')
+points = gpd.read_file(shppath, driver='FileGDB', layer='HomelessCampSite_SpatialJoin')
 points = points.to_crs(epsg=2914)
 print("Read data...")
 
@@ -51,7 +52,7 @@ print("Got file name...")
 
 for pID in points.index:
     point = points[points.index==pID]
-    if all(intake_areas.contains(point)):
+    if all(intake_areas.contains(point.loc[0, 'geometry'])):
         dat.loc[pID, 'Above_Intake'] = 'Yes'
     else:
         dat.loc[pID, 'Above_Intake'] = 'No'
