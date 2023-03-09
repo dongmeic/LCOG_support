@@ -23,6 +23,7 @@ today = date.today()
 year = today.strftime("%Y")
 date1 = third_Wednesday(int(year), int(today.strftime("%m")))
 cur_m = today.strftime("%B") + ' ' + year
+rota = pd.read_excel(r'T:\DCProjects\DEIB\Facilitator and Notetaker Rotation.xlsx')
 cur_fcr = rota.loc[rota.Month == cur_m, 'Facilitator'].values[0]
 cur_ntr = rota.loc[rota.Month == cur_m, 'Note Taker'].values[0]
 nextmonth = datetime.date.today() + relativedelta.relativedelta(months=1)
@@ -47,8 +48,8 @@ Meeting facilitators will need to fill out the agenda details. Thank you! </p>
 
 <p>Dongmei on behalf of DEIB Strategic Planning Subcommittee</p></BODY></HTML>
 """
-newMail.To = "dchen@lcog.org"
-#newMail.To = "LCOGDiversityEquityInclusionBelonging@lcog.org"
+#newMail.To = "dchen@lcog.org"
+newMail.To = "LCOGDiversityEquityInclusionBelonging@lcog.org"
 #newMail.From = "LCOGDiversityEquityInclusionBelonging@lcog.org"
 
 newMail.Send()
