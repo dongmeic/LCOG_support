@@ -70,6 +70,7 @@ else:
     sdf_s = sdf[sdf.datestr == maxdatestr.split(' ')[0]]
     df = convert_dtypes_arcgis(sdf_s)
     df.drop(columns='datestr', inplace=True)
+    df.loc[:, 'Comments'] = df.Comments.apply(lambda x: trim_field_value(x))
     datacopy = df.spatial.to_featureclass(path + '\\MyProject4.gdb\\most_recent')
     print(f'Most recent data saved at {datacopy}')
     
@@ -100,6 +101,7 @@ else:
     newfields = ["Nearby_owner", "Nearby_owner_address"]
     missing_own = [row[0] is None for row in arcpy.da.SearchCursor(spatialJoin, "ownname")]
     res = arcpy.GetCount_management(spatialJoin)
+        
     if any(missing_own):
         print(f"Owner name is missing in the {sum(missing_own)} of {res[0]} counts")
         taxlots_w_ownernm = arcpy.management.SelectLayerByAttribute(fc, "NEW_SELECTION", "ownname IS NOT NULL", None)
@@ -121,7 +123,14 @@ else:
                     row[2] = values[0][1]
                 cursor.updateRow(row)
         print("Updated nearby owner name and address...")
-
+    else:
+        with arcpy.da.UpdateCursor(spatialJoin, ["TARGET_FID"]) as cursor:
+            i = 0
+            for row in cursor:
+                row[0] = df.OBJECTID.values[i]
+                i+=1
+                cursor.updateRow(row)
+            
     arcpy.conversion.TableToExcel(spatialJoin, path+'\\most_recent.xlsx')
 
     print('Exported the join table...')

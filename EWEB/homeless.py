@@ -48,3 +48,6 @@ def convert_dtypes_arcgis(df):
             df[col] = df[col].astype('str')
    # Return modified df
     return df
+
+def trim_field_value(x):
+    return x[0:len(x)]

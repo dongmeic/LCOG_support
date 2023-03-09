@@ -52,7 +52,7 @@ print("Got file name...")
 
 for pID in points.index:
     point = points[points.index==pID]
-    if all(intake_areas.contains(point.loc[0, 'geometry'])):
+    if all(intake_areas.contains(point)):
         dat.loc[pID, 'Above_Intake'] = 'Yes'
     else:
         dat.loc[pID, 'Above_Intake'] = 'No'
