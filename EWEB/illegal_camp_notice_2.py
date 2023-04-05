@@ -76,7 +76,7 @@ for pID in points.index:
 
 print("Edited data...")
 
-dat.loc[:, 'Date'] = dat.Date.astype(str)
+dat.loc[:, 'Date'] = dat.Date.apply(lambda x: str(x).split(' ')[0])
 dat.to_excel(file, index=False)
 print("Exported data...")
 
