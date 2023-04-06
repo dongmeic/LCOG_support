@@ -32,6 +32,10 @@ def getNames(df, detailed_name):
     names = list(df.loc[df['Detailed Name']==detailed_name, 'name'].unique())
     return '|'.join(names)
 
+
+
+
+
 def categorize_p8_s(x):
     #print(x)
     wf = re.search("WILLAMETTE fAMILY|WF|wam fam|wamfam|fam", x, re.IGNORECASE)
@@ -427,7 +431,7 @@ def categorize_p9_s(x):
     elif sm:
         res = 'social media'
     elif hsp:
-        res = 'human services profession'
+        res = 'human services'
     elif uo:
         res = 'Domestic Violence Clinic'
     elif sv: 
@@ -615,7 +619,7 @@ def categorize_p9_s(x):
 def categorize_p9_b(x):
     if x in ['family and friends', 'text message', 'Email']:
         res = 'Community Members'
-    elif x in ['human services profession', 'Senior & Disability Services', 'The Child Center', 'Relief Nursery', 'Daisy C.H.A.I.N.', 'Easterseals Oregon', 'EasyCare Inc', 'Community Share', 'Allies, LLC', 'Connected Lane County', 'Lane Workforce Partnership', 'Lane Independent Living Alliance', 'SLLEA', 'Pearl Buck Center', 'Sponsors, Inc', 'Eugene Mission', 'Laurel Hill Center', 'Oregon Supported Living Program', 'Friends of the Children', 'Community Organized Relief Effort', 'Oregon Social Learning Center', 'Resource Connections of Oregon', 'Hope & Safety Alliance', 'HIV Alliance', 'Helping Hands Coalition', 'Meals on Wheels', 'Domestic Violence Clinic', 'Abilitree', 'Goodwill Job Connections']:
+    elif x in ['human services', 'Senior & Disability Services', 'The Child Center', 'Relief Nursery', 'Daisy C.H.A.I.N.', 'Easterseals Oregon', 'EasyCare Inc', 'Community Share', 'Allies, LLC', 'Connected Lane County', 'Lane Workforce Partnership', 'Lane Independent Living Alliance', 'SLLEA', 'Pearl Buck Center', 'Sponsors, Inc', 'Eugene Mission', 'Laurel Hill Center', 'Oregon Supported Living Program', 'Friends of the Children', 'Community Organized Relief Effort', 'Oregon Social Learning Center', 'Resource Connections of Oregon', 'Hope & Safety Alliance', 'HIV Alliance', 'Helping Hands Coalition', 'Meals on Wheels', 'Domestic Violence Clinic', 'Abilitree', 'Goodwill Job Connections']:
         res = 'Human Services'
     elif x in ['housing specialist', 'Affordable Housing', 'SquareOne Villages', 'Everyone Village', 'Sheltercare', 'Mainstream Housing, Inc', 'Cornerstone Community Housing', 'transitional housing', 'Green Leaf Village', 'Community Supported Shelters']:
         res = 'Housing Services'
