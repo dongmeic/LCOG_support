@@ -8,7 +8,8 @@ from datetime import date, datetime, timedelta
 from sys import argv
 import timeit
 
-path = r"G:\projects\UtilityDistricts\eweb\DrinkingWater\EPA319_NPS_grant\ForestApplication\ODF_FACTS_DB\FERNS\FERNS_Model"
+inpath = r"G:\projects\UtilityDistricts\eweb\DrinkingWater\EPA319_NPS_grant\ForestApplication\ODF_FACTS_DB\FERNS"
+path = inpath + "\\FERNS_Model"
 wrkspace = path + "\\FERNS_Workspace.gdb"
 subfolderlist = [x[0] for x in os.walk(path)]
 geodbs = [subfolder for subfolder in subfolderlist if 'Ferns_Noaps_Polygons_' in subfolder]
@@ -179,9 +180,10 @@ def Model11(Input_Data=geodbs[idx]+"\\Ferns_Noaps_Polygons",
                                                         enforce_domains="NO_ENFORCE_DOMAINS")[0]
 
 if __name__ == '__main__':
-    start = timeit.default_timer()
-    Model11(*argv[1:])
-    # print("tested")
-    stop = timeit.default_timer()
-    total_time = stop - start
-    print(f'FERNS for AGO step 1 takes {total_time}')
+    with open(inpath+'\\FERNS_log.txt', "a") as f:
+        start = timeit.default_timer()
+        Model11(*argv[1:])
+        # print("tested")
+        stop = timeit.default_timer()
+        total_time = stop - start
+        print(f'FERNS for AGO step 1 takes {total_time}', file=f)

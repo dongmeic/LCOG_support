@@ -7,7 +7,8 @@ from sys import argv
 from datetime import date
 import timeit
 
-path = r"G:\projects\UtilityDistricts\eweb\DrinkingWater\EPA319_NPS_grant\ForestApplication\ODF_FACTS_DB\FERNS\FERNS_Model"
+inpath = r"G:\projects\UtilityDistricts\eweb\DrinkingWater\EPA319_NPS_grant\ForestApplication\ODF_FACTS_DB\FERNS"
+path = inpath + "\\FERNS_Model"
 wrkspace = path + "\\FERNS_Workspace.gdb"
 year = str(date.today().year)
 
@@ -25,11 +26,12 @@ def FERNSforAGOstep2(Expression=f"YEAR = '{year}'"):  # FERNS for AGO step 2
     print(f"Year {year} has {count} counts!")
 
 if __name__ == '__main__':
-    start = timeit.default_timer()
-    # Global Environment settings
-    with arcpy.EnvManager(scratchWorkspace=wrkspace, workspace=wrkspace):
-        FERNSforAGOstep2(*argv[1:])
-    # print("tested")
-    stop = timeit.default_timer()
-    total_time = stop - start
-    print(f'FERNS for AGO step 2 takes {total_time}')
+    with open(inpath+'\\FERNS_log.txt', "a") as f:
+        start = timeit.default_timer()
+        # Global Environment settings
+        with arcpy.EnvManager(scratchWorkspace=wrkspace, workspace=wrkspace):
+            FERNSforAGOstep2(*argv[1:])
+        # print("tested")
+        stop = timeit.default_timer()
+        total_time = stop - start
+        print(f'FERNS for AGO step 2 takes {total_time}', file=f)

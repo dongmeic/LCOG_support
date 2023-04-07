@@ -9,7 +9,8 @@ from arcgis.gis import GIS
 from arcgis.features import FeatureLayerCollection, FeatureLayer
 
 gis = GIS('home')
-path = r"G:\projects\UtilityDistricts\eweb\DrinkingWater\EPA319_NPS_grant\ForestApplication\ODF_FACTS_DB\FERNS\FERNS_Model"
+inpath = r"G:\projects\UtilityDistricts\eweb\DrinkingWater\EPA319_NPS_grant\ForestApplication\ODF_FACTS_DB\FERNS"
+path = inpath + "\\FERNS_Model"
 wrkspace = path + "\\FERNS_Workspace.gdb"
 year = str(date.today().year)
 arcpy.env.workspace = wrkspace
@@ -51,10 +52,11 @@ def FERNSforAGOstep3(Expression="YEAR <> '{0}'".format(year)):  # FERNS for AGO 
 
 if __name__ == '__main__':
     # Global Environment settings
-    start = timeit.default_timer()
-    with arcpy.EnvManager(scratchWorkspace=wrkspace, workspace=wrkspace):
-        FERNSforAGOstep3()
-    # print("tested")
-    stop = timeit.default_timer()
-    total_time = stop - start
-    print(f'FERNS for AGO step 3 takes {total_time}')
+    with open(inpath+'\\FERNS_log.txt', "a") as f:
+        start = timeit.default_timer()
+        with arcpy.EnvManager(scratchWorkspace=wrkspace, workspace=wrkspace):
+            FERNSforAGOstep3()
+        # print("tested")
+        stop = timeit.default_timer()
+        total_time = stop - start
+        print(f'FERNS for AGO step 3 takes {total_time}', file=f)
