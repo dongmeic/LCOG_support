@@ -32,9 +32,158 @@ def getNames(df, detailed_name):
     names = list(df.loc[df['Detailed Name']==detailed_name, 'name'].unique())
     return '|'.join(names)
 
+def categorize_p7_s(x):
+    ff = re.search("at ex|With gf|with ex|an Ex|my ex|mom|daughter|son|father|Mother|sister|brother|family|niece|wife|parent|cousin|step child|spouse|daugheter|daighter|daugter|daugther|husband|uncle|aunt|guardian|Dad|Relative|adult|friend|Familial|Causin|girlfriend|Frend|Roommate|neighbor|fmaily|Freind|friemd|Firend|gma|grandma|duaghter|froiend|Firend|Sibling|barkhimer|kids|aquaintence|aquaintance|Acquaintance|fiend|Famoly|familiy|fiend|Parent|Families|casa de amigo|Parwnts|in laws|someone else's|faniky|property|in-laws|neice", x, re.IGNORECASE)
+    svdp = re.search("Vincent|SVDP|SVPD|Second chance|St.V|St V|sleep|Swick|Sarah Koski|Jeff|Amber|Vikki|Aspiranti|Aspirnanti|Ashely|st. |First place|1st place|Avdp|Dawn to dawn|Dusk to Dawn|Dusk 2 Drawn",x, re.IGNORECASE)
+    cf = re.search("couch|sofa|housesitting|from house to house|Place to place|surfing", x, re.IGNORECASE)
+    wf = re.search("Willamette|Willammette|WF|wallamete|wamfam|wam fam|willimatte|Wilammette", x, re.IGNORECASE)
+    tc = re.search("treatment|recovery|rehabilitation", x, re.IGNORECASE)
+    sha = re.search("Sherman", x, re.IGNORECASE)
+    a = re.search("Alluvium", x, re.IGNORECASE)
+    st = re.search("tent|street|ave|Eugene|drive|highway|Camp|st |river|RD|park|Outside|armitage|moving around|glenwood|woods|Out side|outdoors", x, re.IGNORECASE)
+    v = re.search("car|trailer|van|rv|Vehicle|motor|truck|5th wheel|automobile|jeep|Toyota|Vehcile", x, re.IGNORECASE)
+    th = re.search("transitional|Oxford|tranistional|Transition|tranistional|transtional|Transition|Transactional|Transitiopnal|Trans. Housing", x, re.IGNORECASE)
+    lg = re.search("new roads|looking glass|lookingglass", x, re.IGNORECASE)
+    wb = re.search("About to|Losing|Getting|Just|day notice|90|wil|ends|last resort|going to be", x, re.IGNORECASE)
+    e = re.search("Emergency", x, re.IGNORECASE)
+    si = re.search("Sponsor|megan|Meghan|Spnors|Spobnsor's|sponsers|Sponosors|Sponsons|sponsosrs"+'|'+getNames(df=who, detailed_name='Sponsors Inc Staff'), x, re.IGNORECASE)
+    gh = re.search("guest house|GuestHouse|guess house", x, re.IGNORECASE)
+    em = re.search("julie hansen|mission|Mision", x, re.IGNORECASE)
+    sv = re.search("Square one|Opportunity|OPPERTUNITY|Opertunity|Dwayne|Rosa Village", x, re.IGNORECASE)
+    h = re.search("Studios|hotel|Comfort Suites|Econo Lodge", x, re.IGNORECASE)
+    m = re.search("motel", x, re.IGNORECASE)
+    bob = re.search("Bridges on Broadway|B O B|BOB|Bridges on  broadway|Bridges on \nbroadway|Bridges of broadway", x, re.IGNORECASE)
+    sc = re.search("ShelterCare|Ruby Renfro|SC Staff|Catrina|Amanda|Dana|Alison Pfaff|Shelter care", x, re.IGNORECASE)
+    pjr = re.search("Project Roomkey|Project room key|ProjectRoomkey", x, re.IGNORECASE)
+    ev = re.search("Everyone", x, re.IGNORECASE)
+    s = re.search("shelter|hut|Sheleter", x, re.IGNORECASE)
+    css = re.search("CSS|Community Supported Shelters|Destinee Thompson|Safe Spot|Conestoga Hut|Community Supported", x, re.IGNORECASE)
+    r = re.search("Sober|hub",x, re.IGNORECASE)
+    t = re.search("Temporary|currently|RENTING|temp housing", x, re.IGNORECASE)
+    fema = re.search("FEMA", x, re.IGNORECASE)
+    c = re.search("condemed", x, re.IGNORECASE)
+    g = re.search("garage|storage|barn|back yard|Backyard", x, re.IGNORECASE)
+    hw = re.search("halfway", x, re.IGNORECASE)
+    up = re.search("habitation|home security issue|unsafe environment|uninhabitable", x, re.IGNORECASE)
+    rest = re.search("rest|entertainment center|back room", x, re.IGNORECASE)
+    oasis = re.search("Oasis", x, re.IGNORECASE)
+    hfg = re.search("homes for good", x, re.IGNORECASE)
+    lp = re.search("Eugene|Springfield|Florence|Portland|rural|Oregon|California|CA|Or 9|Cottage Grove|Nevada| ST|county|Hwy|garfield| dr|Braeman Village|W 24th|Roosevelt|Harlow|Broadway|Redwood|Venta|Veneta|Antelope Way", x, re.IGNORECASE)
+    ml = re.search("McKenzie Living", x, re.IGNORECASE)
+    fh = re.search("Foster home", x, re.IGNORECASE)
+    
+    if wf:
+        res = "Willamette Family"
+    elif svdp:
+        res = "SVDP Shelter"
+    elif oasis:
+        res = "OASIS"
+    elif v:
+        res = "in a vehicle"
+    elif ff:
+        res = "family/friends'"
+    elif cf:
+        res = "couch surfing"
+    elif sha:
+        res = "Sherman Housing Authority"
+    elif hfg:
+        res = "Homes For Good"
+    elif up:
+        res = "uninhabitable place"
+    elif fema:
+        res = "FEMA housing"
+    elif a:
+        res = "Alluvium"
+    elif pjr:
+        res = "Project Roomkey"
+    elif ml:
+        res = "McKenzie Living"
+    elif th:
+        res = "transitional housing"
+    elif rest:
+        res = "rest areas"
+    elif e:
+        res = "Emergency shelter"
+    elif ev:
+        res = "Everyone Village"
+    elif si:
+        res = "Sponsors"
+    elif gh:
+        res = "Guest House"
+    elif em:
+        res = "Eugene Mission"
+    elif sv: 
+        res = "SquareOne Villages"
+    elif h:
+        res = "hotel"
+    elif m:
+        res = "motel"
+    elif r:
+        res = "Inpatient Drug Rehab"
+    elif tc:
+        res = "treatment center"
+    elif bob:
+        res = "Bridges on Broadway"
+    elif css:
+        res = "Community Supported Shelters"
+    elif sc:
+        res = "ShelterCare"
+    elif s:
+        res = "shelter"
+    elif lg:
+        res = "Looking Glass"
+    elif st:
+        res = "tent"
+    elif t:
+        res = "temporary housing"
+    elif c:
+        res = "condemned property"
+    elif g:
+        res = "mixed-use space"
+    elif hw:
+        res = "halfway housing"
+    elif fh:
+        res = "foster home"
+    elif wb:
+        res = "soon to be homeless"
+    elif lp:
+        res = "unclassified location"
+    else:
+        res = "unspecified location"
+    return res
 
+def categorize_p7_b(x):
+    if x in ["Willamette Family", "treatment center", "Guest House", "Inpatient Drug Rehab", "McKenzie Living"]:
+        res = "Treatment Facility"
+    elif x in ["SVDP Shelter", "ShelterCare", "Community Supported Shelters", "shelter", "Eugene Mission", "Emergency shelter", "Project Roomkey", "Everyone Village", "FEMA housing"]:
+        res = "Shelter"
+    elif x in ["Sponsors", "halfway housing"]:
+        res = "Correctional Institution" 
+    elif x in ["Looking Glass", "OASIS", "foster home"]:
+        res = "Community Services Organization"
+    elif x in ["Bridges on Broadway", "Homes For Good"]:
+        res = "Homes For Good"
+    elif x in ["SquareOne Villages", "Sherman Housing Authority"]:
+        res = "Affordable Housing"
+    elif x in ["transitional housing", "temporary housing"]:
+        res = "Temporary Housing"
+    elif x in ["condemned property", "mixed-use space", "uninhabitable place", "rest areas"]:
+        res = "Uninhabitable Space"
+    elif x in ["hotel", "motel"]:
+        res = "Hotel Or Motel"
+    elif x in ["family/friends'", "couch surfing"]:
+        res = "Community Members'"
+    elif x in ["in a vehicle", "Alluvium", "tent"]:
+        res = "Vehicle Or Tent"
+    else:
+        res = "Unclassified or Unspecified Location"
+    return res
 
-
+def reorganizeP7():
+    df = aqh[(aqh.Preference=='P7') & (aqh.Answer=='Yes') & ~(aqh.Response.astype(str) == 'nan')]
+    df.loc[:, 'P7SCat'] = df.copy()['Response'].apply(lambda x: categorize_p7_s(x))
+    df.loc[:, 'P7BCat'] = df.copy()['P7SCat'].apply(lambda x: categorize_p7_b(x))
+    return df
 
 def categorize_p8_s(x):
     #print(x)
@@ -65,7 +214,7 @@ def categorize_p8_s(x):
     oslp = re.search("Oregon Supported Living Program", x, re.IGNORECASE)
     lila = re.search("Independent Living|LILA", x, re.IGNORECASE)
     an = re.search("Advocates Northwest", x, re.IGNORECASE)
-    wbc = re.search("White Bird|David Joseph|Whitebird", x, re.IGNORECASE)
+    wbc = re.search("White Bird|David|Whitebird", x, re.IGNORECASE)
     cht = re.search("Claire Hutton", x, re.IGNORECASE)
     ps = re.search("Peer Support|Peers support|Per support|PSS", x, re.IGNORECASE)
     lhc = re.search("Laurel Hill Center"+'|'+getNames(df=who, detailed_name='Laurel Hill Center Staff'), x, re.IGNORECASE)
@@ -266,7 +415,7 @@ def categorize_p8_s(x):
 
 def categorize_p8_b(x):
     if x in ['family', 'friend', 'community member']:
-        res = 'Community Members'
+        res = 'Community Member'
     elif x in ['case manager', 'support staff', 'case worker', 'advocate', 'Licensed Clinical Social Worker','peer support specialist', 'personal agent', 'caregiver', 'Senior & Disability Services', 'The Child Center', 'Relief Nursery', 'Daisy C.H.A.I.N.', 'Easterseals Oregon', 'EasyCare Inc', 'Community Share', 'Allies, LLC', 'Connected Lane County', 'Lane Workforce Partnership', 'Lane Independent Living Alliance', 'SLLEA', 'Pearl Buck Center', 'Sponsors, Inc', 'Eugene Mission', 'Laurel Hill Center', 'Oregon Supported Living Program', 'Friends of the Children', 'Community Organized Relief Effort', 'Oregon Social Learning Center', 'Resource Connections of Oregon', 'Hope & Safety Alliance', 'HIV Alliance', 'Helping Hands Coalition', 'Meals on Wheels', 'Domestic Violence Clinic', 'Abilitree', 'Goodwill Job Connections', 'Campbell Community Center', 'Mckenzie Personnel Systems', 'Black Thistle Street Aid', 'USCRI', 'Advocates Northwest', 'Sunshine Care Environments', 'Avanti ElderCare Resources', 'NAACP']:
         res = 'Human Services'
     elif x in ['housing specialist', 'Housing Navigator', 'SquareOne Villages', 'Everyone Village', 'Sheltercare', 'Mainstream Housing, Inc', 'Cornerstone Community Housing', 'Green Leaf Village', 'Community Supported Shelters', 'Redwood Cove Senior Apartments']:
@@ -294,29 +443,29 @@ def categorize_p9_s(x):
     #print(x)
     wf = re.search("Willamette|WF|wallamete|wamfam|wam fam|willimatte", x, re.IGNORECASE)
     af = re.search('affordablehousing|Affordable Housing|affordablehomes', x, re.IGNORECASE)
-    hfg = re.search("Homes for Good|HFG|ho n es for good|home for goods|Homegorgood|home goods|Homesforgood|Homes4Good|Don|Homes 4 good|Home4Good|Housing For Good|Village Oaks|good for homes|Housetogood|Good Homes|Your|Housing for Good|list|Houses For Good|Home for good|office|HGF|Sarah Wilson|Walk|Drive|Homes fo Good|h 4 g|h4g|BOB|JJ|Booth|rays food place|Homesfor good|Bridges on Broadway|Drove|came|lobby|Hones for good|541-682-2550|Resident Services|Cappy|Sarah Stanley|Kat |JJ|Dustin|Johanna|Pope|Waitlist connect|Duncan|Melissa Hartman|Maclain Barney|don|already|RSS|pop up|Homes for a good|home for goods|homes for goods"+'|'+getNames(df=who, detailed_name='Homes for Good Staff'), x, re.IGNORECASE)
-    svdp = re.search("Vincent|SVDP|SVPD|Second chance|St.|St V|sleep|Swick|Sarah Koski|Jeff|Amber|Vikki|Aspiranti|Aspirnanti|Ashely", x, re.IGNORECASE)
-    fb = re.search("Facebook|Fb|F b|Favebook|Face book|Facebok", x, re.IGNORECASE)
-    hsp = re.search("manger|Mnager|Manaement|mangement|manageent|Manger|Mnagement|Manager|manger|Case Mgr|case worker|Social Services|Counselor|Oasis|Family Coach|Service Navigator|caseworker|CM|peer support|Nurse|Personal Agent|PA|Management|social service agency|Social worker|Advocate|COUNSELER|Peer Support|caregiver|Care Provider|Service Coordinator|Intake worker|support staff|advisor|PSS|adviser|Legal Aid|worker|social|case|advo", x, re.IGNORECASE)
+    hfg = re.search("Homes for Good|HFG|ho n es for good|home for goods|Homegorgood|home goods|Homesforgood|Homes4Good|Don|Homes 4 good|Home4Good|Housing For Good|Village Oaks|good for homes|Housetogood|Good Homes|Your|Housing for Good|list|Houses For Good|Home for good|office|HGF|Sarah Wilson|Walk|Drive|Homes fo Good|h 4 g|h4g|BOB|JJ|Booth|rays food place|Homesfor good|Bridges on Broadway|Drove|came|lobby|Hones for good|541-682-2550|Resident Services|Cappy|Sarah Stanley|Kat |JJ|Dustin|Johanna|Pope|Waitlist connect|Duncan|Melissa Hartman|Maclain Barney|don|already|RSS|pop up|Homes for a good|home for goods|homes for goods|Resource center|lottery|Jacob fox|B O B"+'|'+getNames(df=who, detailed_name='Homes for Good Staff'), x, re.IGNORECASE)
+    svdp = re.search("Vincent|SVDP|SVPD|Second chance|St.V|St V|sleep|Swick|Sarah Koski|Jeff|Amber|Vikki|Aspiranti|Aspirnanti|Ashely|st. |First place|1st place", x, re.IGNORECASE)
+    fb = re.search("Facebook|Fb|F b|Favebook|Face book|Facebok|Faced book", x, re.IGNORECASE)
+    hsp = re.search("manger|Mnager|Manaement|mangement|manageent|Manger|Mnagement|Manager|manger|Case Mgr|case worker|Social Services|Counselor|Oasis|Family Coach|Service Navigator|caseworker|CM|peer support|Nurse|Personal Agent|PA|Management|social service agency|Social worker|Advocate|COUNSELER|Peer Support|caregiver|Care Provider|Service Coordinator|Intake worker|support staff|advisor|PSS|adviser|Legal Aid|worker|social|case|advo|domestic violence support", x, re.IGNORECASE)
     lc = re.search("Lane county|lanecounty|County worker|Probation"+'|'+getNames(df=who, detailed_name='Lane County Staff Member'), x, re.IGNORECASE)                
     hsa = re.search("Hope and safety|Womenspace|woman’s space|Laura blackwell|Help and safety|Hope n safety|women space|Women's space", x, re.IGNORECASE)
     css = re.search("CSS|Community Supported|Destinee Thompson", x, re.IGNORECASE)
-    hs = re.search("Housing Specialist|housing services|Housing Coordinator|Housing cordinator|housing authority|Housing advocate|Housing advo|resident services coordinator|navigator|Housing help|Housings authorities|AHO|My housing", x, re.IGNORECASE)
+    hs = re.search("Housing Specialist|housing services|Housing Coordinator|Housing cordinator|housing authority|Housing advocate|Housing advo|resident services coordinator|navigator|Housing help|Housings authorities|AHO|My housing|housing agency|housing source|Gary Robert|Cynthia Sharp|Beth Johnson|Housing stailbization", x, re.IGNORECASE)
     odhs = re.search("HS|ODHS|DHS|Human Resources|Human Resorces|welfare|voc|D.h.s|D.h s", x, re.IGNORECASE)
     ftc = re.search("Friends of", x, re.IGNORECASE)
-    ccs = re.search("CCS|Catholic comm|Cathlico community|food bank|Community Service", x, re.IGNORECASE)
+    ccs = re.search("CCS|Catholic comm|Cathlico community|food bank|Community Service|Foodbox|Food box", x, re.IGNORECASE)
     lhc = re.search("Laurel", x, re.IGNORECASE)
-    ff= re.search("mom|daughter|son|father|mother|sister|brother|family|niece|wife|parent|cousin|step child|spouse|daugheter|daighter|daugter|daugther|husband|uncle|aunt|legal guardian|Dad|Relative|adult|friend|Familial|mouth|Causin|Community members|girlfriend|Frend|coworker|Roommate|neighbor|Coworker|fmaily|Co-worker|Co worker|vecino|landlord|Freind|work|talk|friemd|Firend|gma|grandma|tenant|duaghter|room mate|froiend|Firend|fr|f|Sibling|barkhimer|kids|Community|Current|employer|boss|apt mgr|aquaintence|aquaintance|Acquaintance|the guest house|wom|w"+'|'+getNames(df=who, detailed_name='Community Member'), x, re.IGNORECASE)
+    ff= re.search("mom|daughter|son|father|Mother|sister|brother|family|niece|wife|parent|cousin|step child|spouse|daugheter|daighter|daugter|daugther|husband|uncle|aunt|legal guardian|Dad|Relative|adult|friend|Familial|Causin|girlfriend|Frend|Roommate|neighbor|fmaily|Freind|friemd|Firend|gma|grandma|duaghter|room mate|froiend|Firend|Sibling|barkhimer|kids|aquaintence|aquaintance|Acquaintance|fiend|Famoly|familiy|fiend", x, re.IGNORECASE)
     ew = re.search("Weekly", x, re.IGNORECASE)
     sc = re.search("ShelterCare|Ruby Renfro|SC Staff|Catrina|Amanda|Dana|Alison Pfaff|Shelter care", x, re.IGNORECASE)
     cc = re.search("Child Center", x, re.IGNORECASE)
-    wbc = re.search("White Bird|Whitebird", x, re.IGNORECASE)
+    wbc = re.search("White Bird|David|Whitebird", x, re.IGNORECASE)
     headst = re.search("Head Start|Headstart", x, re.IGNORECASE)
-    lcog = re.search("Senior & Disability Services|Senior and Disable|Senior Disable|Senior and Disability|Senior and disabilities|Senior or Disabled Service|Senior Services|Senior & Disabiliy|sds|S&D|Senior & Disabled|Senior Citizens Disability", x, re.IGNORECASE)
+    lcog = re.search("Senior & Disability Services|Senior and Disable|Senior Disable|Senior and Disability|Senior and disabilities|Senior or Disabled Service|Senior Services|Senior & Disabiliy|sds|S&D|Senior & Disabled|Senior Citizens Disability|Gienia", x, re.IGNORECASE)
     cfnc = re.search("Coast Fork Nursing Center", x, re.IGNORECASE)
     rg = re.search("register guard|RegisterGuard|RG", x, re.IGNORECASE)
     tri = re.search("Trillium|Chelsea|insurance", x, re.IGNORECASE)
-    s8 = re.search("Section 8|baimbridge|Balmbridge|s8|Voucher|section8", x, re.IGNORECASE)
+    s8 = re.search("Section 8|baimbridge|Balmbridge|s8|Voucher|section8|Sec 8", x, re.IGNORECASE)
     stc = re.search("treatment", x, re.IGNORECASE)
     cfd = re.search("Center for family development|Cfd", x, re.IGNORECASE)
     gg = re.search("Google|search|inquiry|curious|check|look", x, re.IGNORECASE)
@@ -328,7 +477,7 @@ def categorize_p9_s(x):
     clc = re.search('Olivia Goodheart|See above'+'|'+getNames(df=who, detailed_name='Connected Lane County Staff '), x, re.IGNORECASE)
     rn = re.search("Relief Nursery", x, re.IGNORECASE)
     sm = re.search("SM|Social media", x, re.IGNORECASE)
-    si = re.search("Sponsor|megan|Meghan|Spnors|Spobnsor's|sponsers|Sponosors"+'|'+getNames(df=who, detailed_name='Sponsors Inc Staff'), x, re.IGNORECASE)
+    si = re.search("Sponsor|megan|Meghan|Spnors|Spobnsor's|sponsers|Sponosors|Sponsons"+'|'+getNames(df=who, detailed_name='Sponsors Inc Staff'), x, re.IGNORECASE)
     ws = re.search("Worksource|work source|worksouce|Gretchen Stupke", x, re.IGNORECASE)
     cco = re.search("Catholic Charities|Catholic  Charities|cco", x, re.IGNORECASE)
     sllea = re.search("SLLEA"+'|'+getNames(df=who, detailed_name='Smart Living Learning and Earning with Autism Staff'), x, re.IGNORECASE)
@@ -346,14 +495,14 @@ def categorize_p9_s(x):
     cs = re.search("Community Share|Community Sharing", x, re.IGNORECASE)
     reddit = re.search("REDDIT", x, re.IGNORECASE)
     lh = re.search("Landmark Health", x, re.IGNORECASE)
-    email = re.search("mail|newsletter|link|emai|eamil|Enail|Emial|enail|Emqil|Eamil", x, re.IGNORECASE)
+    email = re.search("mail|newsletter|link|emai|eamil|Enail|Emial|enail|Emqil|Eamil|Emaol", x, re.IGNORECASE)
     flyer = re.search("flyer|Fkyer|flier", x, re.IGNORECASE)
     text = re.search("text|message|rext|Massage", x, re.IGNORECASE)
     web = re.search("web|internet|intenter|computer|intetnet|211|site|line|self|keep", x, re.IGNORECASE)
     wfp = re.search("workforce|work force", x, re.IGNORECASE)
     eo = re.search("Employment", x, re.IGNORECASE)
     gf = re.search("Green Leaf", x, re.IGNORECASE)
-    ap = re.search("applied|Previous|always", x, re.IGNORECASE)
+    ap = re.search("applied|Previous|always|familiar", x, re.IGNORECASE)
     news = re.search("News", x, re.IGNORECASE)
     call = re.search("call|phone|541|hotline", x, re.IGNORECASE)
     wic = re.search("wic", x, re.IGNORECASE)
@@ -377,10 +526,9 @@ def categorize_p9_s(x):
     dc = re.search("Daisy", x, re.IGNORECASE)
     oslc = re.search("fair", x, re.IGNORECASE)
     abi = re.search("Abilitree", x, re.IGNORECASE)
-    mc = re.search("councilor|my Dr.|doctor|mental health provider|Medical Provider|Counseling|Councelor|mentor|Hospital|therapist|therapy|Jose Maria santana|councilor|Amelia Jans|clinic", x, re.IGNORECASE)
+    mc = re.search("councilor|my Dr.|doctor|mental health provider|Medical Provider|Counseling|Councelor|mentor|Hospital|therapist|therapy|Jose Maria santana|councilor|Amelia Jans|clinic|Mental heath|VA", x, re.IGNORECASE)
     wsc = re.search("Women’s Center", x, re.IGNORECASE)
     ph = re.search("Peace", x, re.IGNORECASE)
-    lp = re.search("Love", x, re.IGNORECASE)
     hhc = re.search("Helping Hands", x, re.IGNORECASE)
     medic = re.search("Medicaid", x, re.IGNORECASE)
     corn = re.search("Cornerstone", x, re.IGNORECASE)
@@ -398,7 +546,8 @@ def categorize_p9_s(x):
     hopwa = re.search("hopwa", x, re.IGNORECASE)
     gjc = re.search("Goodwill", x, re.IGNORECASE)
     lcc = re.search("l.c.c|lcc|community college|cox|Schaun", x, re.IGNORECASE)
-    oa = re.search("drive|Drove|came|lobby|booth|pop up", x, re.IGNORECASE)
+    cm = re.search("Deborah|Kairos|All|Employee|chandler|Another applicant|Tentant|Community|Current|employer|boss|apt mgr|Coworker|Co-worker|Co worker|vecino|landlord|coworker|Community members|tenant|Michele|Kiros|Tammi|Tami|word o|mouth|WOM|work|talk|Sarah Owen|assistance|Mike"+'|'+getNames(df=who, detailed_name='Community Member'), x, re.IGNORECASE)
+    co = re.search("the guest house|love|child school|Electrónico|church|Many places|other|agency|MAT program|Resident Meeting|grapevice", x, re.IGNORECASE)
     
     if wf:
         res = 'Willamette Family'
@@ -418,6 +567,8 @@ def categorize_p9_s(x):
         res = 'Abilitree'
     elif corn:
         res = 'Cornerstone Community Housing'
+    elif svdp:
+        res = 'St. Vincent de Paul'
     elif po:
         res = 'Public Notice Oregon'
     elif sos:
@@ -514,8 +665,6 @@ def categorize_p9_s(x):
         res = 'White Bird Clinic'
     elif headst:
         res = 'Head Start'
-    elif lp:
-        res = 'Love Project'  
     elif lcog:
         res = 'Senior & Disability Services'
     elif rs:
@@ -594,31 +743,31 @@ def categorize_p9_s(x):
         res = 'Women, Infants, and Children'
     elif mc:
         res = 'medical provider or therapist'
+    elif email:
+        res = 'Email'
     elif call:
         res = 'Phone call'
     elif gg:
         res = 'Google'
     elif web:
         res = 'website'
-    elif oa:
-        res = 'other agencies'
-    elif ff:
-        res = 'family and friends'
-    elif email:
-        res = 'Email'
     elif flyer:
         res = 'flyer'
     elif text:
         res = 'text message'
-    elif svdp:
-        res = 'St. Vincent de Paul'
+    elif cm:
+        res = 'community member'
+    elif ff:
+        res = 'family and friends'
+    elif co:
+        res = 'community organization'
     else:
         res = 'unknown'
     return res
 
 def categorize_p9_b(x):
-    if x in ['family and friends', 'text message', 'Email']:
-        res = 'Community Members'
+    if x in ['family and friends', 'text message', 'Email', 'community member']:
+        res = 'Community Member'
     elif x in ['human services', 'Senior & Disability Services', 'The Child Center', 'Relief Nursery', 'Daisy C.H.A.I.N.', 'Easterseals Oregon', 'EasyCare Inc', 'Community Share', 'Allies, LLC', 'Connected Lane County', 'Lane Workforce Partnership', 'Lane Independent Living Alliance', 'SLLEA', 'Pearl Buck Center', 'Sponsors, Inc', 'Eugene Mission', 'Laurel Hill Center', 'Oregon Supported Living Program', 'Friends of the Children', 'Community Organized Relief Effort', 'Oregon Social Learning Center', 'Resource Connections of Oregon', 'Hope & Safety Alliance', 'HIV Alliance', 'Helping Hands Coalition', 'Meals on Wheels', 'Domestic Violence Clinic', 'Abilitree', 'Goodwill Job Connections']:
         res = 'Human Services'
     elif x in ['housing specialist', 'Affordable Housing', 'SquareOne Villages', 'Everyone Village', 'Sheltercare', 'Mainstream Housing, Inc', 'Cornerstone Community Housing', 'transitional housing', 'Green Leaf Village', 'Community Supported Shelters']:
@@ -639,15 +788,15 @@ def categorize_p9_b(x):
 
 def categorize_p9_c(x):
     email = re.search("mail|newsletter|link|emai|eamil|Enail|Emial|enail|Emqil|Eamil|sent", x, re.IGNORECASE)
-    sm = re.search('Facebook|Fb|F b|Favebook|Face book|Facebok|SM|Social media|REDDIT|Instagram', x, re.IGNORECASE)
+    sm = re.search('Facebook|Fb|F b|Favebook|Face book|Facebok|SM|Social media|REDDIT|Instagram|Faced book', x, re.IGNORECASE)
     flyer = re.search("flyer|Fkyer|flier", x, re.IGNORECASE)
     text = re.search("text|message|rext|Massage", x, re.IGNORECASE)
     news = re.search("Eugene Weekly|register guard|RegisterGuard|RG|News|notice", x, re.IGNORECASE)
-    se = re.search('Google|search|check', x, re.IGNORECASE)
-    web = re.search("web|internet|intenter|computer|intetnet|affordablehousing|Affordable Housing|affordablehomes|.com|.org|211|site|in line|online|on line", x, re.IGNORECASE)
+    se = re.search('Google|search|check|internet|intenter|computer|intetnet|in line|online|on line', x, re.IGNORECASE)
+    web = re.search("web|affordablehousing|Affordable Housing|affordablehomes|.com|.org|211|site", x, re.IGNORECASE)
     call = re.search("call|phone|541", x, re.IGNORECASE)
     ov = re.search("office|drive|came|walk|booth|pop up|drove|went|rays food place|lobby", x, re.IGNORECASE)
-    wom = re.search("mouth|talk|hear|ask|meet|visit|said|say", x, re.IGNORECASE)
+    wom = re.search("word of|mouth|talk|heard|ask|meet|visit|said|told|tell", x, re.IGNORECASE)
     
     if email:
         res = 'Email'
