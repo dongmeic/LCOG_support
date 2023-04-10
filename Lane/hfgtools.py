@@ -1,10 +1,13 @@
 import pandas as pd
-import os, re
+import os, re, time, requests, sys, json
 from datetime import datetime, date
+import numpy as np
+import geopandas as gpd
 
 pd.options.mode.chained_assignment = None
 
-inpath = r'T:\DCProjects\Support\Lane\HfG\DataFromThem'
+path = r'T:\DCProjects\Support\Lane\HfG'
+inpath = path + '\\DataFromThem'
 who = pd.read_csv(inpath + '\\who_helped_others.csv')
 
 # application question history
@@ -22,6 +25,92 @@ ac = pd.read_csv(inpath + '\\ApplicationContacts.csv')
 # applicant income
 ai = pd.read_csv(inpath + '\\ApplicantIncome.csv')
 
+def get_mailAdr_df(export=True):
+    excl = 'General Delivery Melissa A Fletcher'
+    cols = ['MailAddress1', 'MailAddress2', 'MailCity', 'MailState', 'MailZIP']
+    mail = oa[(oa.LegalAddress1.isnull()) & (oa.MailAddress1.notnull()) & (oa.MailAddress1 != excl)][cols]
+    mail.loc[mail.MailAddress2.isnull(), 'MailAddress2'] = ''
+    print(f"there are {mail.shape[0]} records with a mail address")
+    maildf = mail.drop_duplicates()
+    print(f"there are {maildf.shape[0]} unique mail addresses")
+    maildf['Address'] = maildf.apply(lambda row: get_full_address(
+                                         row.MailAddress1, 
+                                         row.MailAddress2, 
+                                         row.MailCity, 
+                                         row.MailState, 
+                                         row.MailZIP), axis=1)
+    t0 = time.time()
+    lonlat_df = get_lonlat_df(maildf.Address.unique())
+    elapsed = (time.time() - t0) / 60
+    print('Elapsed time for geocoding: %.2fminutes' % (elapsed))
+    if export:
+        maildf.to_csv(path+'\\output\\mail_address.csv', index=False)
+        lonlat_df.to_file(path+'\\output\\mail_locations.shp')
+    return mail, maildf, lonlat_df
+
+def get_legalAdr_df(export=True):
+    nonaddr = ['na', 'Homeless', 'In vehicle','homeless','HOMELESS','Eugene','My car','None',
+               'general delivery', 'live on the streets', 'In vehicle']
+    cols = ['KeyApplication', 'LegalAddress1', 'LegalAddress2', 'LegalCity', 'LegalState', 'LegalZIP']
+    legal = oa[(oa.LegalAddress1.notnull()) & (~oa.LegalAddress1.isin(nonaddr)) & (oa.LegalCity.notnull())][cols]
+    legal.loc[legal.LegalAddress2.isnull(), 'LegalAddress2'] = ''
+    legal['Address'] = legal.apply(lambda row: get_full_address(
+                                         row.LegalAddress1, 
+                                         row.LegalAddress2, 
+                                         row.LegalCity, 
+                                         row.LegalState, 
+                                         row.LegalZIP), 
+            axis=1)
+    t0 = time.time()
+    lonlat_df = get_lonlat_df(legal.Address.unique())
+    elapsed = (time.time() - t0) / 60
+    print('Elapsed time for geocoding: %.2fminutes' % (elapsed))
+    if export:
+        legal.to_csv(path+'\\output\\legal_address.csv', index=False)
+        lonlat_df.to_file(path+'\\output\\locations.shp')
+    return legal, lonlat_df
+
+def get_lonlat_df(toCheck):
+    lat = list(map(lambda x: get_loc_info(x)['lat'], toCheck))
+    lng = list(map(lambda x: get_loc_info(x)['lng'], toCheck))
+    adr = list(map(lambda x: get_loc_info(x)['adr'], toCheck))
+    df = pd.DataFrame(np.array([toCheck, lng, lat, adr]).T, columns=['Address', 'Longitude', 'Latitude', 'Location'])
+    gdf = gpd.GeoDataFrame(df, crs="EPSG:4326", geometry=gpd.points_from_xy(df.Longitude, df.Latitude))
+    return gdf
+
+def get_loc_info(x='Alvadore, OR'):
+    
+    GOOGLE_MAPS_API_URL = 'https://maps.googleapis.com/maps/api/geocode/json'
+
+    params = {
+        'address': x,
+        'sensor': 'false',
+        'region': 'usa',
+        'key': 'AIzaSyAk8bBxbwFmP_adCiSIK4CzqkNl6CdjLqc'
+    }
+
+    # Do the request and get the response data
+    req = requests.get(GOOGLE_MAPS_API_URL, params=params)
+    res = req.json()
+    if res['status'] == 'ZERO_RESULTS':
+        print(f'{x} returns no results')
+    else:
+        # Use the first result
+        result = res['results'][0]
+        geodata = dict()
+        geodata['lat'] = result['geometry']['location']['lat']
+        geodata['lng'] = result['geometry']['location']['lng']
+        geodata['adr'] = result['formatted_address']
+        #print('{address}. (lat, lng) = ({lat}, {lng})'.format(**geodata))
+        return geodata
+
+def get_full_address(address1, address2, city, state, zipcode): #ID
+    #print(ID)
+    zipcode = str(zipcode)
+    if len(zipcode) == 4:
+        zipcode = '0'+zipcode
+    address = address1.title() + ' ' + address2.title() + ', ' + city.title() + ', ' + state + ' ' + zipcode
+    return address
 
 def calculate_age(dob):
     born = datetime.strptime(dob, '%Y-%m-%d')
@@ -34,7 +123,7 @@ def getNames(df, detailed_name):
 
 def categorize_p7_s(x):
     ff = re.search("at ex|With gf|with ex|an Ex|my ex|mom|daughter|son|father|Mother|sister|brother|family|niece|wife|parent|cousin|step child|spouse|daugheter|daighter|daugter|daugther|husband|uncle|aunt|guardian|Dad|Relative|adult|friend|Familial|Causin|girlfriend|Frend|Roommate|neighbor|fmaily|Freind|friemd|Firend|gma|grandma|duaghter|froiend|Firend|Sibling|barkhimer|kids|aquaintence|aquaintance|Acquaintance|fiend|Famoly|familiy|fiend|Parent|Families|casa de amigo|Parwnts|in laws|someone else's|faniky|property|in-laws|neice", x, re.IGNORECASE)
-    svdp = re.search("Vincent|SVDP|SVPD|Second chance|St.V|St V|sleep|Swick|Sarah Koski|Jeff|Amber|Vikki|Aspiranti|Aspirnanti|Ashely|st. |First place|1st place|Avdp|Dawn to dawn|Dusk to Dawn|Dusk 2 Drawn",x, re.IGNORECASE)
+    svdp = re.search("Vincent|SVDP|SVPD|Second chance|St.V|St V|sleep|Swick|Sarah Koski|Jeff|Amber|Vikki|Aspiranti|Aspirnanti|Ashely|st. |First place|1st place|Avdp|Dawn to dawn|Dusk to Dawn|Dusk 2 Drawn|outreach pallet homes",x, re.IGNORECASE)
     cf = re.search("couch|sofa|housesitting|from house to house|Place to place|surfing", x, re.IGNORECASE)
     wf = re.search("Willamette|Willammette|WF|wallamete|wamfam|wam fam|willimatte|Wilammette", x, re.IGNORECASE)
     tc = re.search("treatment|recovery|rehabilitation", x, re.IGNORECASE)
