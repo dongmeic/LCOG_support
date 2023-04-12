@@ -3,6 +3,7 @@ import os, re, time, requests, sys, json
 from datetime import datetime, date
 import numpy as np
 import geopandas as gpd
+from sqlalchemy import create_engine
 
 pd.options.mode.chained_assignment = None
 
@@ -25,26 +26,313 @@ ac = pd.read_csv(inpath + '\\ApplicationContacts.csv')
 # applicant income
 ai = pd.read_csv(inpath + '\\ApplicantIncome.csv')
 
-def get_mailAdr_df(export=True):
+engine = create_engine(   
+"mssql+pyodbc:///?odbc_connect="
+"Driver%3D%7BODBC+Driver+17+for+SQL+Server%7D%3B"
+"Server%3Drliddb.int.lcog.org%2C5433%3B"
+"Database%3DRLIDGeo%3B"
+"Trusted_Connection%3Dyes%3B"
+"ApplicationIntent%3DReadWrite%3B"
+"WSID%3Dclwrk4087.int.lcog.org%3B")
+
+zip_sql = '''
+SELECT 
+zipcode AS ZipCode,
+mailcity AS City,
+Shape.STAsBinary() AS geometry
+FROM dbo.ZIPCode;
+'''
+
+# this group has one id matched with two addresses and the addresses return different results from geocoding
+adr2cor = ['1665 Oak Patch Rd , Eugene, OR 97402', 
+ '1699 N Terry St , Eugene, OR 97402', 
+ '1468 Harvard Drive , Springfield, OR 97477',
+ '1190 W 6Th Ave , Eugene, OR 97402',
+ '62F28 Main Street #1, Springfield, OR 97478',
+'341 E 12Th Ave , Eugene, OR 97401',
+'1880 Cleveland St , Eugene, OR 97405',
+'717 Hwy 99 N , Eugene, OR 97402',
+'792 Clone St , Yoncalla, OR 97499',
+'19554 Debra Dr , Springfield, OR 97477',
+'96100 Mills Rd Apt 710, Houston, TX 77070']
+adrcored = ['1665 Oak Patch Rd 229, Eugene, OR 97402', 
+ '1699 N Terry St Spc 35, Eugene, OR 97402', 
+ '1468 Harbor Dr , Springfield, OR 97477',
+ '1190 W 6Th Ave # 295, Eugene, OR 97402',
+ '6228 Main St Apt 1, Springfield, OR 97478',
+'341 E 12Th Ave 573-99-1014, Eugene, OR 97401',
+'1880 Cleveland St Apt 1, Eugene, OR 97405',
+'717 Highway 99 N. T-9, B-4, Eugene, OR 97402',
+'792 Clone St 7, Yoncalla, OR 97499',
+'1955 Debra Dr , Springfield, OR 97477',
+'9100 Mills Rd Apt 710, Houston, TX 77070']
+
+# this group has one id matched with two addresses and the addresses return the same from geocoding
+adr2cor0 = ['1624 Water St None, Springfield, OR 97477',
+           '1025 West Hilliard Lane , Eugene, OR 97404',
+           '40 Owosso Dr Unit 15, Eugene, OR 97404',
+           '1491 5Th Street 23, Springfield, OR 97477',
+           '1973 18Th Street 4, Springfield, OR 97477',
+           '255High Street #318, Eugene, OR 97401',
+           'Eugene Mission , Eugene, OR 97402',
+           '1950 Laurel Ave Ne Apt 15, Salem, OR 97301',
+           '310 Pitney Lane Unit 5, Junction City, OR 97448',
+           '755 East Broadway #62 , Eugene, OR 97402',
+           '1120 W 24Th Avenue , Eugene, OR 97405',
+           '448 W. 12Th 3, Eugene, OR 97401',
+           '3618 W 18Th Ave Apt 2 , Eugene, OR 97402',
+           '1547 City View St 201, Eugene, OR 97402',
+           '969 Highway 99 N # 13/14 , Eugene, OR 97402',
+           '1995 Amazon Pkw , Eugene, OR 97402',
+           '615 Commercial St Ne (Day Shelter Homeless) , Salem, OR 97301',
+           '1096 N Street , Springfield, OR 97477',
+           '2527 Lakeview Dr. Apt 102, Eugene, OR 97408',
+           '111N N Garfield St # 4, Eugene, OR 97402',
+           'Rv On River Rd. , Eugene, OR 97404',
+           'White Bird Clinic 341 E 12Th Ave , Eugene, OR 97401',
+           '555 Tyler Street 22, Eugene, OR 97401',
+           '100 Port Rd 4, Pt Arena, CA 95468',
+           '87687 Hwy 101 2, Florence, OR 97439',
+           'Rv On River Rd. , Eugene, OR 97404',
+           '732 64Th Street , Springfield, OR 97478',
+           '305 1/2 23Rd St , Springfield, OR 97477',
+           '4675 Goodpasture Loop Apt 136 , Eugene, OR 97401',
+           '335 W. 2Nd Ave 102, Eugene, OR 97402',
+           '3655 W. 13Th Ave. C-110, Eugene, OR 97402',
+           '298 E Oregon Sp M28, Creswell, OR 97426',
+           '76251 Rainbow St Unit 25 , Oakridge, OR 97463',
+           '1602 Water Street , Springfield, OR 97477',
+           '4069 Southway Lp , Springfield, OR 97478',
+           '435 River Lp2 , Eugene, OR 97404',
+           '56676 Mckenzie Hwy , Mc Kenzie Brg, OR 97413',
+           '388 Hwy 99 N. , Eugene, OR 97402',
+           '1141 1/2  Main St , Springfield, OR 97404',
+           '5664 A Street , Springfield, OR 97478']
+adrcored0 = ['1624 Water St , Springfield, OR 97477',
+            '1025 W Hilliard Ln , Eugene, OR 97404',
+            '40 Owosso Dr # 15, Eugene, OR 97404',
+            '1491 5Th Street Apt 23, Springfield, OR 97477',
+            '1973 18Th St Apt 4, Springfield, OR 97477',
+            '255 High St Apt 318, Eugene, OR 97401',
+            '1542 W 1St Ave Eugene Mission, Eugene, OR 97402',
+            '1950 Laurel Ave Ne, Apt 15, Salem, OR 97301',
+            '310 Pitney Ln Unit 5, Junction City, OR 97448',
+            '755 E Broadway #62 , Eugene, OR 97402',
+            '1120 W 24Th Ave , Eugene, OR 97405',
+            '448 W 12Th Ave Apt 3, Eugene, OR 97401',
+            '3618 W 18Th Ave Apt 2, Eugene, OR 97402',
+            '1547 City View St Apt 201, Eugene, OR 97402',
+            '969 Highway 99 N #13/14, Eugene, OR 97402',
+            '1995 Amazon Pkwy , Eugene, OR 97405',
+            '615 Commercial St Ne , Salem, OR 97301',
+            '1096 N St , Springfield, OR 97477',
+            '2527 Lakeview Dr Apt 102, Eugene, OR 97408',
+            '111 N Garfield St # 4, Eugene, OR 97402',
+            'River Rd. In Motorhome , Eugene, OR 97404',
+            '341 E 12Th Ave , Eugene, OR 97401',
+            '555 Tyler Street 22, Eugene, OR 97402',
+            '100 Port Rd , Pt Arena, CA 95468',
+            '87687 Highway 101 Apt 2, Florence, OR 97439',
+            'River Rd. In Motorhome , Eugene, OR 97404',
+            '732 64Th St , Springfield, OR 97478',
+            '305 23Rd St , Springfield, OR 97477',
+            '4675 Goodpasture Loop Apt 136, Eugene, OR 97401',
+            '335 W. 2Nd Ave 102, Eugene, OR 97401',
+            '3655 W 13Th Ave C-110, Eugene, OR 97402',
+            '298 E Oregon Sp , Creswell, OR 97426',
+            '76251 Rainbow St Unit 25, Oakridge, OR 97463',
+            '1602 Water St , Springfield, OR 97477',
+            '4069 Southway Loop , Springfield, OR 97478',
+            '435 River Loop 2 , Eugene, OR 97404',
+            '56676 Mckenzie Hwy , Mckenzie Bridge, OR 97413',
+            '388 Highway 99 N , Eugene, OR 97402',
+            '1141 Main St , Springfield, OR 97404',
+            '5664 A St , Springfield, OR 97478']
+
+# this group has one id matched with three addresses
+adr2cor1 = ['2515 Frontier Dr Apt, Eugene, OR 97401',
+           '448 W. 12Th 3, Eugene, OR 97408',
+           '448 W. 12Th 3, Eugene, OR 97401']
+adrcored1 = ['2515 Frontier Dr Apt 17, Eugene, OR 97401',
+            '448 W 12Th Ave Apt 3, Eugene, OR 97401',
+            '448 W 12Th Ave Apt 3, Eugene, OR 97401']
+adr2cor2 = adr2cor + adr2cor0 + adr2cor1
+adrcored2 = adrcored + adrcored0 + adrcored1
+adrcor_dict = {adr2cor2[i]: adrcored2[i] for i in range(len(adr2cor2))}
+
+oldnms = [x for x in oa.columns if len(x) > 10]
+newnms = ['KeyID', 'MailAdr1', 'MailAdr2', 'LegalAdr1', 'LegalAdr2', 'Mobile',
+          'OtrContact', 'EmancMinor', 'HHSize', 'HHMinors', 'IncAnnual',
+          'InChecking', 'IncSavings', 'Investment', 'IncRealEst','IncomeOthr',
+          'AsChecking', 'AstSavings', 'AstInvestm', 'AstRealEst', 'AstOther',
+          'QuestIDs', 'OptOt92006', 'PrAgencyID', 'ApplicatTS', 'AddrsValid',
+          'LotteryNm', 'Citizenshp', 'AccntEmail']
+colnm_dict = {oldnms[i]:newnms[i] for i in range(len(oldnms))}
+
+oldnms = ['KeyApplication', 'Relationship', 'Citizenship']
+newnms = ['KeyID', 'Relatship', 'Citizship']
+colnm_dict1 = {oldnms[i]:newnms[i] for i in range(len(oldnms))}
+
+def reorganize_loc(export=True):
+    locdf = gpd.read_file(path+'\\output\\all_locations.shp')
+    locdf['CorAddress'] = locdf.Address.map(adrcor_dict)
+    locdf.loc[locdf.CorAddress.isnull(), 'CorAddress'] = locdf.loc[locdf.CorAddress.isnull(), 'Address']
+    nlocdf = locdf.drop_duplicates(subset=['CorAddress'])
+    nlocdf.drop(columns=['Address'], inplace = True)
+    nlocdf.rename(columns={'CorAddress':'Address'}, inplace=True)
+    if export:
+        nlocdf.to_file(path+'\\output\\cor_all_locations.shp')
+    return nlocdf
+
+def unique(list1):
+    """
+    This function takes a list and returns a list of unique values
+    """
+    x = np.array(list1)
+    return list(np.unique(x))
+
+def reorganize_am(df):
+    am = get_name_id(df)
+    am['Race'] = am.Race.apply(lambda x: ', '.join(re.sub("[^0-9]","",x)))
+    return am 
+
+def reorganize_oa(df):
+    df = get_name_id(df)
+    oa = get_address_df(df)
+    adrcols = ['MailAddress1', 'MailAddress2', 'MailCity', 'LegalAddress1','LegalAddress2', 'LegalCity']
+    oa[adrcols] = oa[adrcols].apply(lambda x: title_col(x))
+    return oa
+
+def title_col(v):
+    return list(map(lambda x: check_str(x), v))
+
+def check_str(x):
+    if x is not None:
+        x = str(x).title()
+    else:
+        x = None
+    return x
+
+def reorganize_aqh():
+    t0 = time.time()
+    sel_p7 = ((aqh.Preference=='P7') & (aqh.Answer=='Yes') & ~(aqh.Response.astype(str) == 'nan'))
+    aqh.loc[sel_p7, 'P7SCat'] = aqh[sel_p7]['Response'].apply(lambda x: categorize_p7_s(x))
+    aqh.loc[sel_p7, 'P7BCat'] = aqh[sel_p7]['P7SCat'].apply(lambda x: categorize_p7_b(x))
+    sel_p8 = ((aqh.Preference=='P8') & (aqh.Answer=='Yes'))
+    aqh.loc[aqh.Response=='Kat', 'Response'] = 'Kat '
+    aqh.loc[sel_p8, 'P8SCat'] = aqh[sel_p8]['Response'].apply(lambda x: categorize_p8_s(x))
+    aqh.loc[sel_p8, 'P8BCat'] = aqh[sel_p8]['P8SCat'].apply(lambda x: categorize_p8_b(x))
+    sel_p9 = ((aqh.Preference=='P9') & ~(aqh.Response.astype(str) == 'nan'))
+    aqh.loc[sel_p9, 'P9SCat'] = aqh[sel_p9]['Response'].apply(lambda x: categorize_p9_s(x))
+    aqh.loc[sel_p9, 'P9BCat'] = aqh[sel_p9]['P9SCat'].apply(lambda x: categorize_p9_b(x))
+    aqh.loc[sel_p9, 'P9Cat'] = aqh[sel_p9]['Response'].apply(lambda x: categorize_p9_c(x))
+    elapsed = (time.time() - t0) / 60
+    print('Elapsed time for reorganizing question history: %.2fminutes' % (elapsed))
+    return aqh
+
+def get_address_df(df):
+    df.loc[df.LegalAddress2.isnull(), 'LegalAddress2'] = ''
+    df.loc[df.MailAddress2.isnull(), 'MailAddress2'] = ''
+    nonaddr = ['na', 'Homeless', 'In vehicle','homeless','HOMELESS','Eugene','My car','None',
+               'general delivery', 'live on the streets', 'In vehicle']
+    sel = (oa.LegalAddress1.notnull()) & (~oa.LegalAddress1.isin(nonaddr)) & (oa.LegalCity.notnull())
+    df.loc[sel, 'Address'] = df[sel].apply(lambda row: get_full_address(
+                                         row.LegalAddress1, 
+                                         row.LegalAddress2, 
+                                         row.LegalCity, 
+                                         row.LegalState, 
+                                         row.LegalZIP), axis=1)
     excl = 'General Delivery Melissa A Fletcher'
-    cols = ['MailAddress1', 'MailAddress2', 'MailCity', 'MailState', 'MailZIP']
-    mail = oa[(oa.LegalAddress1.isnull()) & (oa.MailAddress1.notnull()) & (oa.MailAddress1 != excl)][cols]
-    mail.loc[mail.MailAddress2.isnull(), 'MailAddress2'] = ''
-    print(f"there are {mail.shape[0]} records with a mail address")
-    maildf = mail.drop_duplicates()
-    print(f"there are {maildf.shape[0]} unique mail addresses")
-    maildf['Address'] = maildf.apply(lambda row: get_full_address(
+    sel2 = (oa.LegalAddress1.isnull()) & (oa.MailAddress1.notnull()) & (oa.MailAddress1 != excl)
+    df.loc[sel2, 'Address'] = df[sel2].apply(lambda row: get_full_address(
                                          row.MailAddress1, 
                                          row.MailAddress2, 
                                          row.MailCity, 
                                          row.MailState, 
                                          row.MailZIP), axis=1)
+    df['CorAddress'] = df.Address.map(adrcor_dict)
+    df.loc[df.CorAddress.isnull(), 'CorAddress'] = df.loc[df.CorAddress.isnull(), 'Address']
+    df.drop(columns=['Address'], inplace = True)
+    df.rename(columns={'CorAddress':'Address'}, inplace=True)
+    return df
+
+def get_name_id(df):
+    df['Age'] = df['DOB'].apply(lambda x: calculate_age(x))
+    df.loc[df.NameMiddle.isnull(), 'NameMiddle'] = ''
+    df.loc[df.SSN.isnull(), 'SSN'] = 0
+    df['ID'] = df[['NameFirst', 'NameMiddle', 'NameLast', 'Age', 'SSN']].apply(lambda row: '-'.join([row.NameFirst, row.NameMiddle, row.NameLast, str(row.Age), str(int(row.SSN))]), axis=1)
+    return df
+
+def get_oa_gdf(df, export=False):
+    oa = reorganize_oa(df)
+    locdf = gpd.read_file(path+'\\output\\cor_all_locations.shp')
+    oa = oa.merge(locdf, on='Address')
+    oa_gdf = gpd.GeoDataFrame(oa, geometry='geometry')
+    oa.drop(columns=['geometry'], inplace = True)
+    if export:
+        oa.to_csv(path + '\\output\\online_application.csv', index=False)
+        oa_gdf.rename(columns=colnm_dict, inplace=True)
+        oa_gdf.to_file(path+'\\output\\online_application.shp')
+    return oa, oa_gdf
+
+def get_am_gdf(oa, am, export=False):
+    am = reorganize_am(am)
+    oa = reorganize_oa(oa)
+    oa, oa_gdf = get_oa_gdf(oa)
+    cols = ['KeyApplication', 'Language', 'Address', 'Longitude', 'Latitude', 'Location']
+    am_df = am.merge(oa[cols], on = 'KeyApplication')
+    cols.append('geometry')
+    amdf = am.merge(oa_gdf[cols], on = 'KeyApplication')
+    am_gdf = gpd.GeoDataFrame(amdf, geometry='geometry')
+    if export:
+        am.to_csv(path + '\\output\\application_members.csv', index=False)
+        am_gdf.rename(columns=colnm_dict1, inplace=True)
+        am_gdf.to_file(path+'\\output\\application_members.shp')
+    return am_df, am_gdf
+    
+# points in polygons
+def get_pip(points, polygon, idcol):
+    id_list = list(polygon[idcol].values)
+    df = pd.DataFrame().reindex_like(points).dropna()
+    polygon = polygon.to_crs(crs=points.crs)
+    for ID in id_list:
+        pol = (polygon.loc[polygon[idcol]==ID])
+        pol.reset_index(drop = True, inplace = True)
+        pip_mask = points.within(pol.loc[0, 'geometry'])
+        pip_data = points.loc[pip_mask].copy()
+        pip_data[idcol]= ID
+        df = df.append(pip_data)
+    df.reset_index(inplace=True, drop=True)
+    df = df.drop(columns='geometry')
+    return df
+
+def readZipCode():
+    ZipCode = gpd.GeoDataFrame.from_postgis(zip_sql, engine, geom_col='geometry')
+    ZipCode.crs = "EPSG:2914"
+    return ZipCode
+
+zip_shp = readZipCode()
+
+def get_mailAdr_df(export=True):
+    excl = 'General Delivery Melissa A Fletcher'
+    cols = ['KeyApplication', 'MailAddress1', 'MailAddress2', 'MailCity', 'MailState', 'MailZIP']
+    mail = oa[(oa.LegalAddress1.isnull()) & (oa.MailAddress1.notnull()) & (oa.MailAddress1 != excl)][cols]
+    mail.loc[mail.MailAddress2.isnull(), 'MailAddress2'] = ''
+    print(f"there are {mail.shape[0]} records with a mail address")
+    mail['Address'] = mail.apply(lambda row: get_full_address(
+                                         row.MailAddress1, 
+                                         row.MailAddress2, 
+                                         row.MailCity, 
+                                         row.MailState, 
+                                         row.MailZIP), axis=1)
+    maildf = mail[['MailAddress1', 'MailAddress2', 'MailCity', 'MailState', 'MailZIP', 'Address']].drop_duplicates()
+    print(f"there are {maildf.shape[0]} unique mail addresses")
     t0 = time.time()
     lonlat_df = get_lonlat_df(maildf.Address.unique())
     elapsed = (time.time() - t0) / 60
     print('Elapsed time for geocoding: %.2fminutes' % (elapsed))
     if export:
-        maildf.to_csv(path+'\\output\\mail_address.csv', index=False)
+        mail.to_csv(path+'\\output\\mail_address.csv', index=False)
         lonlat_df.to_file(path+'\\output\\mail_locations.shp')
     return mail, maildf, lonlat_df
 
@@ -106,7 +394,7 @@ def get_loc_info(x='Alvadore, OR'):
 
 def get_full_address(address1, address2, city, state, zipcode): #ID
     #print(ID)
-    zipcode = str(zipcode)
+    zipcode = str(int(zipcode))
     if len(zipcode) == 4:
         zipcode = '0'+zipcode
     address = address1.title() + ' ' + address2.title() + ', ' + city.title() + ', ' + state + ' ' + zipcode
