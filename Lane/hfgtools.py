@@ -173,6 +173,27 @@ oldnms = ['KeyApplication', 'Relationship', 'Citizenship']
 newnms = ['KeyID', 'Relatship', 'Citizship']
 colnm_dict1 = {oldnms[i]:newnms[i] for i in range(len(oldnms))}
 
+ethn_dict = {1:"Hispanic or Latino", 0:"Not Hispanic or Latino"}
+race_dict = {'1':"White", 
+             '2':"Black/African American", 
+             '3':"American Indian/Alaska Native", 
+             '4':"Asian", 
+             '5':"Native Hawaiian/Other Pacific Islander",
+             '6':"Other"}
+citizen_dict = {"EC": "Eligible Citizen", 
+                "EN":"Eligible Non-Citizen", 
+                "IC":"Ineligible Child of head of household",
+                "IN":"Ineligible Noncitizen",
+                "ND":"No Documentation Submitted",
+                "PV":"Pending Verification"}
+
+def race_check(x, race):
+    if race in x:
+        res = 1
+    else:
+        res = 0
+    return res
+
 def reorganize_loc(export=True):
     locdf = gpd.read_file(path+'\\output\\all_locations.shp')
     locdf['CorAddress'] = locdf.Address.map(adrcor_dict)
@@ -184,6 +205,19 @@ def reorganize_loc(export=True):
         nlocdf.to_file(path+'\\output\\cor_all_locations.shp')
     return nlocdf
 
+def map_race(a):
+    lst = a.split(',')
+    lst = [*map(lambda x: x.replace(' ', ''), lst)]
+    lst = [*map(lambda x:race_dict[x], lst)]
+    return lst
+
+def mixed_race(x):
+    if len(x) > 1:
+        res = 1
+    else:
+        res = 0
+    return res
+
 def unique(list1):
     """
     This function takes a list and returns a list of unique values
@@ -194,6 +228,17 @@ def unique(list1):
 def reorganize_am(df):
     am = get_name_id(df)
     am['Race'] = am.Race.apply(lambda x: ', '.join(re.sub("[^0-9]","",x)))
+    am['RaceNotes'] = am.Race.apply(lambda x: map_race(x))
+    am['MultiRace'] = am.RaceNotes.apply(lambda x: mixed_race(x))
+    am['RaceNotes'] = am.RaceNotes.str.join(',')
+    am['White'] = am.RaceNotes.apply(lambda x: race_check(x, race='White'))
+    am['African'] = am.RaceNotes.apply(lambda x: race_check(x, race='African'))
+    am['IndianAlsk'] = am.RaceNotes.apply(lambda x: race_check(x, race='Indian/Alaska'))
+    am['Asian'] = am.RaceNotes.apply(lambda x: race_check(x, race='Asian'))
+    am['HawaiianOr'] = am.RaceNotes.apply(lambda x: race_check(x, race='Hawaiian/Other'))
+    am['RaceOther'] = am.Race.apply(lambda x: race_check(x, race='6'))
+    am['CitizNotes'] = am.Citizenship.map(citizen_dict)
+    am['EthniNotes'] = am.Ethnicity.map(ethn_dict)
     return am 
 
 def reorganize_oa(df):
