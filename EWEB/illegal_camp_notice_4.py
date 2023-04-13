@@ -37,7 +37,8 @@ output_format = '%Y-%m-%d'
 datetime_object = datetime.strptime(res[0], input_format)
 dateinfo = datetime.strftime(datetime_object, output_format)
 #dateinfo = date.today().strftime("%m-%d-%Y")
-mail.To = 'dchen@lcog.org'
+mail.To = 'ajensen@lcog.org'
+mail.CC = 'dchen@lcog.org'
 mail.Subject = f'Illegal Camp Notice to Review {dateinfo}'
 mail.Body = outfile
 mail.Send()
