@@ -1,5 +1,5 @@
 import pandas as pd
-import os, re, time, requests, sys, json
+import os, re, time, requests, sys, json, shutil, os.path
 from datetime import datetime, date
 import numpy as np
 import geopandas as gpd
@@ -160,18 +160,14 @@ adr2cor2 = adr2cor + adr2cor0 + adr2cor1
 adrcored2 = adrcored + adrcored0 + adrcored1
 adrcor_dict = {adr2cor2[i]: adrcored2[i] for i in range(len(adr2cor2))}
 
-oldnms = [x for x in oa.columns if len(x) > 10]
+oldnms = [x for x in oa.columns if len(x) > 10] + ['Relationship', 'Citizenship']
 newnms = ['KeyID', 'MailAdr1', 'MailAdr2', 'LegalAdr1', 'LegalAdr2', 'Mobile',
           'OtrContact', 'EmancMinor', 'HHSize', 'HHMinors', 'IncAnnual',
           'InChecking', 'IncSavings', 'Investment', 'IncRealEst','IncomeOthr',
           'AsChecking', 'AstSavings', 'AstInvestm', 'AstRealEst', 'AstOther',
           'QuestIDs', 'OptOt92006', 'PrAgencyID', 'ApplicatTS', 'AddrsValid',
-          'LotteryNm', 'Citizenshp', 'AccntEmail']
+          'LotteryNm', 'Citizenshp', 'AccntEmail', 'Relatship', 'Citizship']
 colnm_dict = {oldnms[i]:newnms[i] for i in range(len(oldnms))}
-
-oldnms = ['KeyApplication', 'Relationship', 'Citizenship']
-newnms = ['KeyID', 'Relatship', 'Citizship']
-colnm_dict1 = {oldnms[i]:newnms[i] for i in range(len(oldnms))}
 
 ethn_dict = {1:"Hispanic or Latino", 0:"Not Hispanic or Latino"}
 race_dict = {'1':"White", 
@@ -186,6 +182,18 @@ citizen_dict = {"EC": "Eligible Citizen",
                 "IN":"Ineligible Noncitizen",
                 "ND":"No Documentation Submitted",
                 "PV":"Pending Verification"}
+
+def get_counts_pip(points, polygon, idcol, cntnm):
+    pip_df = get_pip(points=points, polygon=polygon, idcol=idcol)
+    cnt = pip_df[idcol].value_counts().rename_axis(idcol).reset_index(name=cntnm)
+    return cnt
+
+def combine_counts_pip(pntlist, polygon, idcol, cntnmlist):
+    out = polygon
+    for i in range(2):
+        cnt=get_counts_pip(pntlist[i], polygon, idcol, cntnmlist[i])
+        out=out.merge(cnt, on=idcol, how='left')
+    return out
 
 def race_check(x, race):
     if race in x:
@@ -311,9 +319,8 @@ def get_name_id(df):
 def get_oa_gdf(df, export=False):
     oa = reorganize_oa(df)
     locdf = gpd.read_file(path+'\\output\\cor_all_locations.shp')
-    oa = oa.merge(locdf, on='Address')
-    oa_gdf = gpd.GeoDataFrame(oa, geometry='geometry')
-    oa.drop(columns=['geometry'], inplace = True)
+    df = oa.merge(locdf, on='Address')
+    oa_gdf = gpd.GeoDataFrame(df, geometry='geometry')
     if export:
         oa.to_csv(path + '\\output\\online_application.csv', index=False)
         oa_gdf.rename(columns=colnm_dict, inplace=True)
@@ -324,14 +331,16 @@ def get_am_gdf(oa, am, export=False):
     am = reorganize_am(am)
     oa = reorganize_oa(oa)
     oa, oa_gdf = get_oa_gdf(oa)
-    cols = ['KeyApplication', 'Language', 'Address', 'Longitude', 'Latitude', 'Location']
+    cols = ['KeyApplication', 'Language', 'MailAddress1', 'MailAddress2',
+       'MailCity', 'MailState', 'MailZIP', 'MailZIP4', 'LegalAddress1',
+       'LegalAddress2', 'LegalCity', 'LegalState', 'LegalZIP', 'LegalZIP4', 'Address']
     am_df = am.merge(oa[cols], on = 'KeyApplication')
     cols.append('geometry')
     amdf = am.merge(oa_gdf[cols], on = 'KeyApplication')
     am_gdf = gpd.GeoDataFrame(amdf, geometry='geometry')
     if export:
-        am.to_csv(path + '\\output\\application_members.csv', index=False)
-        am_gdf.rename(columns=colnm_dict1, inplace=True)
+        am_df.to_csv(path + '\\output\\application_members.csv', index=False)
+        am_gdf.rename(columns=colnm_dict, inplace=True)
         am_gdf.to_file(path+'\\output\\application_members.shp')
     return am_df, am_gdf
     
