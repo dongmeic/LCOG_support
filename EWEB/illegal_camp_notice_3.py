@@ -3,7 +3,7 @@ import arcpy
 outpath = r'G:\projects\UtilityDistricts\eweb\DrinkingWater\IllegalCampCoordination\Recieved'
 path = outpath + '\\IllegalCampNotification_pro'
 
-aprx = arcpy.mp.ArcGISProject(path + "\\IllegalCampsMap.aprx")
+aprx = arcpy.mp.ArcGISProject(path + "\\IllegalCampsMap_DC.aprx")
 
 lyt = aprx.listLayouts("Map*")[0]
 
