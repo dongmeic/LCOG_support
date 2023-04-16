@@ -29,6 +29,16 @@ The work is to report illegal camp site for watershed protection. The project tr
 
 [Step 5](https://github.com/dongmeic/LCOG_support/blob/main/EWEB/illegal_camp_notice_5.py): after the review, decide whether there is a need to edit the map manually and remove the added image; run this script to add the updated map and send out the notice to the group.
 
+# Lane
+## Lane Transit Survey
+There were two maps requests on [the count of respondents by zip code](https://github.com/dongmeic/LCOG_support/blob/main/Lane/LaneCountyTransit_ZipCode.ipynb) and [the origins and destinations](https://github.com/dongmeic/LCOG_support/blob/main/Lane/LaneCountyTransit_OriginDest.ipynb), respectively.
+## Homes for Good
+1. Data cleaning on the applicant question history;
+2. Geocode the application based on addresses;
+3. Organize data for data viz;
+4. Create Tableau viz and ArcGIS Dashboards;
+5. Create StoryMaps
+
 # PHR
 ## [Bike parking gaps](https://github.com/dongmeic/LCOG_support/tree/main/PHR#bike-parking-gaps)
 

@@ -233,6 +233,21 @@ def unique(list1):
     x = np.array(list1)
     return list(np.unique(x))
 
+def age(x):
+    if x <= 2:
+        res = 'Infants (0-2)'
+    elif x > 2 and x <= 12:
+        res = 'Children (3-12)'
+    elif x > 12 and x <= 17:
+        res = 'Teenagers (13-17)'
+    elif x >= 18 and x <= 65:
+        res = 'Adults (18-65)'
+    else:
+        res = 'Seniors (65+)'
+    return res
+
+disa_dict = {0:"No", 1:"Yes"}
+
 def reorganize_am(df):
     am = get_name_id(df)
     am['Race'] = am.Race.apply(lambda x: ', '.join(re.sub("[^0-9]","",x)))
@@ -245,8 +260,12 @@ def reorganize_am(df):
     am['Asian'] = am.RaceNotes.apply(lambda x: race_check(x, race='Asian'))
     am['HawaiianOr'] = am.RaceNotes.apply(lambda x: race_check(x, race='Hawaiian/Other'))
     am['RaceOther'] = am.Race.apply(lambda x: race_check(x, race='6'))
+    am.loc[am.MultiRace==0, 'Race2'] = am.loc[am.MultiRace==0, 'RaceNotes']
+    am.loc[am.MultiRace==1, 'Race2'] = 'Multiracial'
     am['CitizNotes'] = am.Citizenship.map(citizen_dict)
     am['EthniNotes'] = am.Ethnicity.map(ethn_dict)
+    am['AgeNotes'] = am.Age.apply(lambda x: age(x))
+    am['DisaNotes'] = am.Disabled.map(disa_dict)
     return am 
 
 def reorganize_oa(df):
@@ -853,9 +872,9 @@ def categorize_p8_b(x):
         res = 'Housing Services'
     elif x in ['counselor',  'Pacific Women’s Center', 'PeaceHealth', 'Oregon Medical Group', 'Looking Glass', 'Center for Family Development', 'Community Health', 'Springfield Treatment Center', 'Trillium', 'Willamette Family', 'White Bird Clinic', 'Facey Medical Group', 'G Street Integrated Health', 'Emergence', 'Coast Fork Nursing Center', 'Landmark Health', 'Orchid Health Fern Ridge Clinic', 'Options', 'Serenity Lane', 'ColumbiaCare Services', 'South Lane Mental Health', 'Legacy Health']:
         res = 'Health Services'
-    elif x in ['SNAP Training & Employment Program', 'Temporary Assistance for Needy Families', 'Lane County Behavioral Health', 'Lane County Dovetail Program', 'Worksource Oregon', 'Housing Choice Voucher Program Section 8', 'Lane County', 'ODHS', 'Employment Department', 'Women, Infants, and Children', 'Oregon Secretary of State', 'State of Oregon', 'Medicaid', 'Department of Labor', 'Oregon Health Authority', 'HOPWA', 'Developmental Disabilities Services', 'Lane County Rural Street Outreach', 'Washington County Housing Services', 'Oregon Secretary of State']:
+    elif x in ['SNAP Training & Employment Program', 'Temporary Assistance for Needy Families', 'Lane County Behavioral Health', 'Lane County Dovetail Program', 'Worksource Oregon', 'Lane County', 'ODHS', 'Employment Department', 'Women, Infants, and Children', 'Oregon Secretary of State', 'State of Oregon', 'Medicaid', 'Department of Labor', 'Oregon Health Authority', 'HOPWA', 'Developmental Disabilities Services', 'Lane County Rural Street Outreach', 'Washington County Housing Services', 'Oregon Secretary of State']:
         res = 'Government Services'
-    elif x == 'Homes For Good':
+    elif x in ['Homes For Good', 'Housing Choice Voucher Program Section 8']:
         res = 'Homes For Good'
     elif x in ['unknown', 'Claire Hutton']:
         res = 'Unknown'
@@ -1207,9 +1226,9 @@ def categorize_p9_b(x):
         res = 'Health Services'
     elif x in ['social media', 'Google', 'Reddit', 'Eugene Weekly', 'Register-Guard', 'news', 'website', 'billboard', 'Instagram', 'Public Notice Oregon', 'Facebook']:
         res = 'Media Communications'
-    elif x in ['SNAP Training & Employment Program', 'Temporary Assistance for Needy Families', 'Lane County Behavioral Health', 'Lane County Dovetail Program', 'Worksource Oregon', 'Housing Choice Voucher Program Section 8', 'Lane County', 'ODHS', 'Employment Department', 'Women, Infants, and Children', 'Oregon Secretary of State', 'State of Oregon', 'Medicaid', 'Department of Labor', 'Oregon Health Authority', 'HOPWA', 'Developmental Disabilities Services', 'Lane County Rural Street Outreach', 'Washington County Housing Services', 'Oregon Secretary of State']:
+    elif x in ['SNAP Training & Employment Program', 'Temporary Assistance for Needy Families', 'Lane County Behavioral Health', 'Lane County Dovetail Program', 'Worksource Oregon', 'Lane County', 'ODHS', 'Employment Department', 'Women, Infants, and Children', 'Oregon Secretary of State', 'State of Oregon', 'Medicaid', 'Department of Labor', 'Oregon Health Authority', 'HOPWA', 'Developmental Disabilities Services', 'Lane County Rural Street Outreach', 'Washington County Housing Services', 'Oregon Secretary of State']:
         res = 'Government Services'
-    elif x in ['Homes For Good', 'flyer', 'Phone call', 'former applicant']:
+    elif x in ['Homes For Good', 'Housing Choice Voucher Program Section 8', 'flyer', 'Phone call', 'former applicant']:
         res = 'Homes For Good'
     elif x == 'unknown':
         res = 'Unknown'
