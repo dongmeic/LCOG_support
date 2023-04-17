@@ -248,6 +248,13 @@ def age(x):
 
 disa_dict = {0:"No", 1:"Yes"}
 
+def poverty(x, y):
+    if (x == 1 and y <= 13590) or (x == 2 and y <= 18310) or (x == 3 and y <= 23030) or (x == 4 and y <= 26500) or (x == 5 and y <= 31040) or (x == 6 and y <= 35580) or (x == 7 and y <= 40120) or (x == 8 and y <= 44660) or (x == 9 and y <= 44660):
+        res = "Below poverty level"
+    else:
+        res = "Above poverty level"
+    return res
+
 def reorganize_am(df):
     am = get_name_id(df)
     am['Race'] = am.Race.apply(lambda x: ', '.join(re.sub("[^0-9]","",x)))
@@ -273,6 +280,7 @@ def reorganize_oa(df):
     oa = get_address_df(df)
     adrcols = ['MailAddress1', 'MailAddress2', 'MailCity', 'LegalAddress1','LegalAddress2', 'LegalCity']
     oa[adrcols] = oa[adrcols].apply(lambda x: title_col(x))
+    oa['Poverty'] = oa[['HouseholdSize', 'IncomeAnnual']].apply(lambda row: poverty(x=row.HouseholdSize, y=row.IncomeAnnual), axis=1)
     return oa
 
 def title_col(v):
@@ -350,7 +358,7 @@ def get_am_gdf(oa, am, export=False):
     am = reorganize_am(am)
     oa = reorganize_oa(oa)
     oa, oa_gdf = get_oa_gdf(oa)
-    cols = ['KeyApplication', 'Language', 'MailAddress1', 'MailAddress2',
+    cols = ['KeyApplication', 'Language', 'HouseholdSize','IncomeAnnual', 'MailAddress1', 'MailAddress2',
        'MailCity', 'MailState', 'MailZIP', 'MailZIP4', 'LegalAddress1',
        'LegalAddress2', 'LegalCity', 'LegalState', 'LegalZIP', 'LegalZIP4', 'Address']
     am_df = am.merge(oa[cols], on = 'KeyApplication')
