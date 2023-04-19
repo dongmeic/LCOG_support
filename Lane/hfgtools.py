@@ -183,6 +183,18 @@ citizen_dict = {"EC": "Eligible Citizen",
                 "ND":"No Documentation Submitted",
                 "PV":"Pending Verification"}
 
+city_cor_dict = {"Apache Jct": "Apache Junction",
+                 "Cottage  Grove":"Cottage Grove",
+                 "Eguene": "Eugene", 
+                 "Eugene Oregon": "Eugene",
+                 "Eugene/Springfield": "Eugene",
+                 "Eugene`":"Eugene",
+                 "Florence Apt 7":"Florence",
+                 "Oregon": "Oregon City",
+                 "Palm Spring":"Palm Springs",
+                 "Sweethome": "Sweet Home",
+                 "Swiss Home": "Swisshome"}
+
 def get_counts_pip(points, polygon, idcol, cntnm):
     pip_df = get_pip(points=points, polygon=polygon, idcol=idcol)
     cnt = pip_df[idcol].value_counts().rename_axis(idcol).reset_index(name=cntnm)
@@ -249,7 +261,7 @@ def age(x):
 disa_dict = {0:"No", 1:"Yes"}
 
 def poverty(x, y):
-    if (x == 1 and y <= 13590) or (x == 2 and y <= 18310) or (x == 3 and y <= 23030) or (x == 4 and y <= 26500) or (x == 5 and y <= 31040) or (x == 6 and y <= 35580) or (x == 7 and y <= 40120) or (x == 8 and y <= 44660) or (x == 9 and y <= 44660):
+    if (x == 1 and y <= 13590) or (x == 2 and y <= 18310) or (x == 3 and y <= 23030) or (x == 4 and y <= 27750) or (x == 5 and y <= 32470) or (x == 6 and y <= 37190) or (x == 7 and y <= 41910) or (x == 8 and y <= 46630) or (x == 9 and y <= 46630+4720) or (x == 10 and y <= 46630+4720*2) or (x == 11 and y <= 46630+4720*3):
         res = "Below poverty level"
     else:
         res = "Above poverty level"
@@ -280,6 +292,9 @@ def reorganize_oa(df):
     oa = get_address_df(df)
     adrcols = ['MailAddress1', 'MailAddress2', 'MailCity', 'LegalAddress1','LegalAddress2', 'LegalCity']
     oa[adrcols] = oa[adrcols].apply(lambda x: title_col(x))
+    selcities = ['Apache Jct', 'Cottage  Grove', 'Eguene', 'Eugene Oregon', 'Eugene/Springfield', 
+                 'Eugene`', 'Florence Apt 7', 'Oregon', 'Palm Spring', 'Sweethome', 'Swiss Home']
+    oa.loc[oa.LegalCity.isin(selcities), 'LegalCity'] = oa.loc[oa.LegalCity.isin(selcities), 'LegalCity'].map(city_cor_dict)
     oa['Poverty'] = oa[['HouseholdSize', 'IncomeAnnual']].apply(lambda row: poverty(x=row.HouseholdSize, y=row.IncomeAnnual), axis=1)
     return oa
 

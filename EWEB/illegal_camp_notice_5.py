@@ -56,7 +56,7 @@ def main(args):
     mail.Body =  """
     Hello, 
 
-    Please see the attached for today's Illegal Camping Report. 
+    Please see the attached for the most recent Illegal Camping Report. 
     For questions about this report or the application please contact myself or Chrissy Barrows at LCOG.
 
     Thank you,
