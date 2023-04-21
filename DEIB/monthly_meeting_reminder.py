@@ -23,7 +23,8 @@ today = date.today()
 year = today.strftime("%Y")
 date1 = third_Wednesday(int(year), int(today.strftime("%m")))
 cur_m = today.strftime("%B") + ' ' + year
-rota = pd.read_excel(r'T:\DCProjects\DEIB\Facilitator and Notetaker Rotation.xlsx')
+#rota = pd.read_excel(r'T:\DCProjects\DEIB\Facilitator and Notetaker Rotation.xlsx')
+rota = pd.read_excel(r'C:\Users\clid1852\OneDrive - lanecouncilofgovernments\DEIB\Facilitator and Notetaker Rotation.xlsx')
 cur_fcr = rota.loc[rota.Month == cur_m, 'Facilitator'].values[0]
 cur_ntr = rota.loc[rota.Month == cur_m, 'Note Taker'].values[0]
 nextmonth = datetime.date.today() + relativedelta.relativedelta(months=1)
