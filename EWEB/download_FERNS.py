@@ -27,7 +27,7 @@ def main():
 
     print("\n")
 
-    data = gpd.read_file(inpath + "\\FERNS_Model\\FERNS_Final_Products.gdb", layer="FERNSSummary_McKenzie_Joined")
+    data = gpd.read_file(inpath + "\\FERNS_Final_Products.gdb", layer="FERNSSummary_McKenzie_Joined")
     print(f"Last update includes {data.shape[0]} records and below shows the summarized acres by activity type:\n")
     print(data.groupby('ActType').agg(SumAcres = pd.NamedAgg(column = 'SUM_calc_acres', aggfunc = sum)))
     print("\n")
