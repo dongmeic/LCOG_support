@@ -7,7 +7,7 @@ from sqlalchemy import create_engine
 
 pd.options.mode.chained_assignment = None
 
-path = r'T:\DCProjects\Support\Lane\HfG'
+path = r'G:\projects\HfG'
 inpath = path + '\\DataFromThem'
 who = pd.read_csv(inpath + '\\who_helped_others.csv')
 
@@ -200,9 +200,9 @@ def get_counts_pip(points, polygon, idcol, cntnm):
     cnt = pip_df[idcol].value_counts().rename_axis(idcol).reset_index(name=cntnm)
     return cnt
 
-def combine_counts_pip(pntlist, polygon, idcol, cntnmlist):
+def combine_counts_pip(pntlist, polygon, idcol, cntnmlist, k=2):
     out = polygon
-    for i in range(2):
+    for i in range(k):
         cnt=get_counts_pip(pntlist[i], polygon, idcol, cntnmlist[i])
         out=out.merge(cnt, on=idcol, how='left')
     return out
@@ -464,7 +464,8 @@ def get_lonlat_df(toCheck):
 
 def get_loc_info(x='Alvadore, OR'):
     
-    GOOGLE_MAPS_API_URL = 'https://maps.googleapis.com/maps/api/geocode/json'
+    # make sure this function is applied only within the daily limit on Google Cloud
+    #GOOGLE_MAPS_API_URL = 'https://maps.googleapis.com/maps/api/geocode/json'
 
     params = {
         'address': x,
