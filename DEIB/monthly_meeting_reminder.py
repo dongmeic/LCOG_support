@@ -27,7 +27,7 @@ cur_m = today.strftime("%B") + ' ' + year
 rota = pd.read_excel(r'C:\Users\clid1852\OneDrive - lanecouncilofgovernments\DEIB\Facilitator and Notetaker Rotation.xlsx')
 cur_fcr = rota.loc[rota.Month == cur_m, 'Facilitator'].values[0]
 cur_ntr = rota.loc[rota.Month == cur_m, 'Note Taker'].values[0]
-nextmonth = datetime.date.today() + relativedelta.relativedelta(months=1)
+nextmonth = datetime.date.today() + relativedelta.relativedelta(months=2)
 ftr_m = nextmonth.strftime("%B") + ' ' + nextmonth.strftime("%Y")
 ftr_fcr = rota.loc[rota.Month == ftr_m, 'Facilitator'].values[0]
 ftr_ntr = rota.loc[rota.Month == ftr_m, 'Note Taker'].values[0]
@@ -41,7 +41,7 @@ newMail.BodyFormat = 2 # olFormatHTML https://msdn.microsoft.com/en-us/library/o
 newMail.HTMLBody =  f"""
 <HTML><BODY><p>Hello all,</p> 
 
-<p>Our meeting facilitator and notetaker next week are {cur_fcr} and {cur_ntr}, and next month are {ftr_fcr} and {ftr_ntr}. Following the links, please find the folders for the <a href="https://lanecouncilofgovernments.sharepoint.com/:f:/r/sites/LCOGDiversityEquityBelonging/Shared%20Documents/Committee%20Meetings/Agendas/2023?csf=1&web=1&e=wBl76p">meeting agenda</a>, and <a href="https://lanecouncilofgovernments.sharepoint.com/:f:/r/sites/LCOGDiversityEquityBelonging/Shared%20Documents/Committee%20Meetings/Meeting%20Notes/2023?csf=1&web=1&e=03DAbf">meeting notes</a>.
+<p>Our meeting facilitator and notetaker next week are {cur_fcr} and {cur_ntr}, and in two month are {ftr_fcr} and {ftr_ntr}. Following the links, please find the folders for the <a href="https://lanecouncilofgovernments.sharepoint.com/:f:/r/sites/LCOGDiversityEquityBelonging/Shared%20Documents/Committee%20Meetings/Agendas/2023?csf=1&web=1&e=wBl76p">meeting agenda</a>, and <a href="https://lanecouncilofgovernments.sharepoint.com/:f:/r/sites/LCOGDiversityEquityBelonging/Shared%20Documents/Committee%20Meetings/Meeting%20Notes/2023?csf=1&web=1&e=03DAbf">meeting notes</a>.
 
 Meeting facilitators will need to fill out the agenda details. Thank you! </p> 
 
