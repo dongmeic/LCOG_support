@@ -7,6 +7,7 @@ import matplotlib.pyplot as plt
 import shapely.geometry
 import geopandas as gpd
 import time
+import taxicab as tc
 
 def get_shortest_route(orgnm, olon, olat, dstnm, dlon, dlat, G):
     routenm = orgnm+' -- '+dstnm
@@ -22,13 +23,20 @@ def get_shortest_route(orgnm, olon, olat, dstnm, dlon, dlat, G):
     destination_node_id = ox.nearest_nodes(G, destination.geometry.x, destination.geometry.y)
     
     route = ox.shortest_path(G, origin_node_id, destination_node_id)
+    r = route[0]
+    if r is None:
+        orig = (olat, olon)
+        dest = (dlat, dlon)
+        route = tc.distance.shortest_path(G, orig, dest)
+        r = route[1]
+
     nodes, edges = ox.graph_to_gdfs(G)
-    route_nodes = nodes.loc[route[0]]
+    route_nodes = nodes.loc[r]
     
     route_line = shapely.geometry.LineString(list(route_nodes.geometry.values))
     route_geom = gpd.GeoDataFrame({
         "geometry": [route_line],
-        "osm_nodes": [route[0]],
+        "osm_nodes": [r],
     })
     gdf=route_geom.set_crs(edges.crs, allow_override=True)
     
@@ -38,4 +46,4 @@ def get_shortest_route(orgnm, olon, olat, dstnm, dlon, dlat, G):
     gdf["end"] = dstnm
     gdf["route"] = routenm
     
-    return route[0], route_line, gdf
+    return r, route_line, gdf
