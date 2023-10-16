@@ -49,8 +49,8 @@ Meeting facilitators will need to fill out the agenda details. Thank you! </p>
 
 <p>Dongmei on behalf of DEIB Strategic Planning Subcommittee</p></BODY></HTML>
 """
-#newMail.To = "dchen@lcog.org"
-newMail.To = "LCOGDiversityEquityInclusionBelonging@lcog.org"
+newMail.To = "dchen@lcog.org"
+#newMail.To = "LCOGDiversityEquityInclusionBelonging@lcog.org"
 #newMail.From = "LCOGDiversityEquityInclusionBelonging@lcog.org"
 
 newMail.Send()
