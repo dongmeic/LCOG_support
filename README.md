@@ -33,13 +33,6 @@ The work is to report illegal camp site for watershed protection. The project tr
 ## Lane Transit Survey
 There were two maps requests on [the count of respondents by zip code](https://github.com/dongmeic/LCOG_support/blob/main/Lane/LaneCountyTransit_ZipCode.ipynb) and [the origins and destinations](https://github.com/dongmeic/LCOG_support/blob/main/Lane/LaneCountyTransit_OriginDest.ipynb), respectively.
 
-## Homes for Good
-1. Data cleaning on the applicant question history;
-2. Geocode the application based on addresses;
-3. Organize data for data viz;
-4. Create Tableau viz and ArcGIS Dashboards;
-5. Create [StoryMaps](https://storymaps.arcgis.com/stories/827b84cfe46142b193e8ace6fa752fe7)
-
 ### South Lane Wheels Transit Development Plan
 The [map](https://lcog.maps.arcgis.com/apps/mapviewer/index.html?webmap=054dc42e19854508b7fa7001da6e96e3) is created to show whether the trips (based on July 2023 data) are inside Cottage Grove City Limits, based on the calculation of trip counts [by origin and destination](https://github.com/dongmeic/LCOG_support/blob/main/Lane/SLW-TDP_July23data.ipynb) and [by route](https://github.com/dongmeic/LCOG_support/blob/main/Lane/ox_path_SLW-TDP_July23data.ipynb). 
 
